@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Collage Maker</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        .layout-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .layout-btn {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: #fff;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .layout-btn:hover {
+            background-color: #f8f9ff;
+        }
+        .layout-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container" style="max-width: 1200px;">
+                <header class="tool-header">
+                    <h1>Image Collage Maker</h1>
+                    <p class="description">कई फोटो मिलाकर कोलाज बनाएँ।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your images here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*" multiple>
+                    </div>
+                    
+                    <div class="collage-wrapper hidden" id="collage-section">
+                        <div id="canvas-container">
+                            <canvas id="collage-canvas"></canvas>
+                        </div>
+                        <div class="controls-panel">
+                            <div class="control-group">
+                                <label>Layout</label>
+                                <div class="layout-buttons">
+                                    <button class="layout-btn active" data-layout="2-col">2 Col</button>
+                                    <button class="layout-btn" data-layout="3-col">3 Col</button>
+                                    <button class="layout-btn" data-layout="2-row">2 Row</button>
+                                    <button class="layout-btn" data-layout="1-2-row">1-2 Row</button>
+                                    <button class="layout-btn" data-layout="2-1-col">2-1 Col</button>
+                                    <button class="layout-btn" data-layout="4-grid">4 Grid</button>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="spacing-slider">Spacing</label>
+                                <div class="slider-group">
+                                    <input type="range" id="spacing-slider" min="0" max="50" value="10">
+                                    <span id="spacing-value">10px</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="bg-color-picker">Background Color</label>
+                                <input type="color" id="bg-color-picker" value="#FFFFFF">
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn" id="download-btn">Download Collage</button>
+                                <button class="btn" id="reset-btn">Choose Others</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const collageSection = document.getElementById('collage-section');
+            
+            const canvas = document.getElementById('collage-canvas');
+            const ctx = canvas.getContext('2d');
+
+            const layoutButtons = document.querySelectorAll('.layout-btn');
+            const spacingSlider = document.getElementById('spacing-slider');
+            const spacingValue = document.getElementById('spacing-value');
+            const bgColorPicker = document.getElementById('bg-color-picker');
+            
+            const downloadBtn = document.getElementById('download-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let uploadedImages = [];
+            let currentLayout = '2-col';
+
+            // Event Listeners
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect();
+            });
+
+            layoutButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    layoutButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentLayout = btn.dataset.layout;
+                    drawCollage();
+                });
+            });
+
+            spacingSlider.addEventListener('input', (e) => {
+                spacingValue.textContent = `${e.target.value}px`;
+                drawCollage();
+            });
+            bgColorPicker.addEventListener('input', drawCollage);
+
+            downloadBtn.addEventListener('click', downloadCollage);
+            resetBtn.addEventListener('click', resetAll);
+
+            // Functions
+            function handleFileSelect() {
+                const files = fileInput.files;
+                if (files.length === 0) return;
+
+                uploadedImages = [];
+                const promises = Array.from(files).map(file => {
+                    return new Promise((resolve, reject) => {
+                        if (!file.type.startsWith('image/')) return resolve(null);
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const img = new Image();
+                            img.onload = () => resolve(img);
+                            img.onerror = reject;
+                            img.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                });
+
+                Promise.all(promises).then(images => {
+                    uploadedImages = images.filter(img => img !== null);
+                    if (uploadedImages.length > 0) {
+                        uploadArea.classList.add('hidden');
+                        collageSection.classList.remove('hidden');
+                        drawCollage();
+                    }
+                });
+            }
+
+            function getLayout(layoutType, numImages, spacing) {
+                const rects = [];
+                let canvasWidth = 1200;
+                let canvasHeight = 800;
+
+                // This is a simplified layout engine. More complex logic can be added.
+                switch (layoutType) {
+                    case '2-col': {
+                        const cols = 2;
+                        const rows = Math.ceil(numImages / cols);
+                        const cellWidth = (canvasWidth - (cols + 1) * spacing) / cols;
+                        const cellHeight = (canvasHeight - (rows + 1) * spacing) / rows;
+                        for (let i = 0; i < numImages; i++) {
+                            const row = Math.floor(i / cols);
+                            const col = i % cols;
+                            rects.push({
+                                x: spacing + col * (cellWidth + spacing),
+                                y: spacing + row * (cellHeight + spacing),
+                                w: cellWidth,
+                                h: cellHeight
+                            });
+                        }
+                        break;
+                    }
+                    case '3-col': {
+                        const cols = 3;
+                        const rows = Math.ceil(numImages / cols);
+                        const cellWidth = (canvasWidth - (cols + 1) * spacing) / cols;
+                        const cellHeight = (canvasHeight - (rows + 1) * spacing) / rows;
+                        for (let i = 0; i < numImages; i++) {
+                            const row = Math.floor(i / cols);
+                            const col = i % cols;
+                            rects.push({
+                                x: spacing + col * (cellWidth + spacing),
+                                y: spacing + row * (cellHeight + spacing),
+                                w: cellWidth,
+                                h: cellHeight
+                            });
+                        }
+                        break;
+                    }
+                    case '4-grid': {
+                        const w = (canvasWidth - 3 * spacing) / 2;
+                        const h = (canvasHeight - 3 * spacing) / 2;
+                        if (numImages > 0) rects.push({ x: spacing, y: spacing, w, h });
+                        if (numImages > 1) rects.push({ x: w + 2 * spacing, y: spacing, w, h });
+                        if (numImages > 2) rects.push({ x: spacing, y: h + 2 * spacing, w, h });
+                        if (numImages > 3) rects.push({ x: w + 2 * spacing, y: h + 2 * spacing, w, h });
+                        break;
+                    }
+                    // Add more layouts here...
+                    default: // Default to 2-col
+                        return getLayout('2-col', numImages, spacing);
+                }
+                return { rects, canvasWidth, canvasHeight };
+            }
+
+            function drawCollage() {
+                if (uploadedImages.length === 0) return;
+
+                const spacing = parseInt(spacingSlider.value);
+                const bgColor = bgColorPicker.value;
+
+                const { rects, canvasWidth, canvasHeight } = getLayout(currentLayout, uploadedImages.length, spacing);
+
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                rects.forEach((rect, index) => {
+                    if (index < uploadedImages.length) {
+                        drawImageToFit(uploadedImages[index], rect);
+                    }
+                });
+            }
+
+            function drawImageToFit(img, rect) {
+                const targetRatio = rect.w / rect.h;
+                const sourceRatio = img.width / img.height;
+                let sx, sy, sWidth, sHeight;
+
+                if (sourceRatio > targetRatio) { // Image is wider than the slot
+                    sHeight = img.height;
+                    sWidth = img.height * targetRatio;
+                    sx = (img.width - sWidth) / 2;
+                    sy = 0;
+                } else { // Image is taller or same ratio
+                    sWidth = img.width;
+                    sHeight = img.width / targetRatio;
+                    sx = 0;
+                    sy = (img.height - sHeight) / 2;
+                }
+
+                ctx.drawImage(img, sx, sy, sWidth, sHeight, rect.x, rect.y, rect.w, rect.h);
+            }
+
+            function downloadCollage() {
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                a.download = `collage.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            function resetAll() {
+                uploadedImages = [];
+                fileInput.value = '';
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                collageSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

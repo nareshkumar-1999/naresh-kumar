@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAN Card Photo & Signature Resizer</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .option-group {
+            background-color: #f8f9ff;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+        .option-group legend {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+        .radio-options label {
+            display: block;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+        .preview-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            text-align: center;
+        }
+        .preview-box {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        .preview-box h3 {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .preview-box img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            background-color: #f0f0f0;
+        }
+        .file-info {
+            font-weight: 500;
+        }
+        #processed-info {
+            color: var(--success-color);
+        }
+        .requirements {
+            background-color: #fffbe6;
+            border: 1px solid #ffe58f;
+            color: #8a6d3b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        .requirements h4 {
+            margin-bottom: 0.5rem;
+        }
+        .action-buttons {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+        @media (max-width: 900px) {
+            .options-grid, .preview-area {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container" style="max-width: 900px;">
+                <header class="tool-header">
+                    <h1>PAN Card Photo & Signature Resizer</h1>
+                    <p class="description">UTI और NSDL के लिए फोटो और सिग्नेचर तैयार करें।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="hidden" id="resizer-section">
+                        <div class="options-grid">
+                            <fieldset class="option-group">
+                                <legend>1. Select Document Type</legend>
+                                <div class="radio-options">
+                                    <label><input type="radio" name="docType" value="photo" checked> Photo</label>
+                                    <label><input type="radio" name="docType" value="signature"> Signature</label>
+                                </div>
+                            </fieldset>
+                            <fieldset class="option-group">
+                                <legend>2. Select Provider</legend>
+                                <div class="radio-options">
+                                    <label><input type="radio" name="provider" value="nsdl" checked> NSDL</label>
+                                    <label><input type="radio" name="provider" value="uti"> UTI</label>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="requirements" id="requirements-info">
+                            <!-- Info will be populated by JS -->
+                        </div>
+
+                        <div class="preview-area">
+                            <div class="preview-box">
+                                <h3>Original Image</h3>
+                                <img id="original-preview" alt="Original">
+                                <p class="file-info" id="original-info">Size: -</p>
+                            </div>
+                            <div class="preview-box">
+                                <h3>Processed Image</h3>
+                                <img id="processed-preview" alt="Processed">
+                                <p class="file-info" id="processed-info">Size: -</p>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn" id="process-btn">Process Image</button>
+                            <button class="btn" id="download-btn" disabled>Download</button>
+                            <button class="btn" id="reset-btn">Choose Another</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const resizerSection = document.getElementById('resizer-section');
+
+            const originalPreview = document.getElementById('original-preview');
+            const processedPreview = document.getElementById('processed-preview');
+            const originalInfo = document.getElementById('original-info');
+            const processedInfo = document.getElementById('processed-info');
+            const requirementsInfo = document.getElementById('requirements-info');
+
+            const processBtn = document.getElementById('process-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            const docTypeRadios = document.querySelectorAll('input[name="docType"]');
+            const providerRadios = document.querySelectorAll('input[name="provider"]');
+
+            let originalFile = null;
+            let processedBlob = null;
+
+            const SPECS = {
+                nsdl: {
+                    photo: { width: 295, height: 413, maxSizeKB: 50, dpi: 300, format: 'jpeg' }, // 3.5cm x 2.5cm @ 300dpi
+                    signature: { width: 531, height: 236, maxSizeKB: 50, dpi: 600, format: 'jpeg' } // 4.5cm x 2.0cm @ 300dpi, but 600dpi is often requested
+                },
+                uti: {
+                    photo: { width: 213, height: 213, maxSizeKB: 30, dpi: 300, format: 'jpeg' },
+                    signature: { width: 400, height: 200, maxSizeKB: 60, dpi: 600, format: 'jpeg' } // Common practice, though specs can be vague
+                }
+            };
+
+            // --- Event Listeners ---
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect();
+            });
+
+            docTypeRadios.forEach(radio => radio.addEventListener('change', updateRequirements));
+            providerRadios.forEach(radio => radio.addEventListener('change', updateRequirements));
+
+            processBtn.addEventListener('click', processImage);
+            downloadBtn.addEventListener('click', downloadImage);
+            resetBtn.addEventListener('click', resetAll);
+
+            // --- Functions ---
+            function formatBytes(bytes, decimals = 2) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const dm = decimals < 0 ? 0 : decimals;
+                const sizes = ['Bytes', 'KB', 'MB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+            }
+
+            function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+
+                originalFile = file;
+                originalPreview.src = URL.createObjectURL(file);
+                originalInfo.textContent = `Size: ${formatBytes(file.size)}`;
+
+                uploadArea.classList.add('hidden');
+                resizerSection.classList.remove('hidden');
+                updateRequirements();
+            }
+
+            function updateRequirements() {
+                const provider = document.querySelector('input[name="provider"]:checked').value;
+                const docType = document.querySelector('input[name="docType"]:checked').value;
+                const spec = SPECS[provider][docType];
+
+                requirementsInfo.innerHTML = `
+                    <h4>Requirements:</h4>
+                    <ul>
+                        <li>Dimensions: <strong>${spec.width}px &times; ${spec.height}px</strong></li>
+                        <li>Max File Size: <strong>&lt; ${spec.maxSizeKB} KB</strong></li>
+                        <li>DPI: <strong>${spec.dpi}</strong></li>
+                    </ul>
+                `;
+            }
+
+            async function processImage() {
+                if (!originalFile) return;
+
+                processBtn.disabled = true;
+                processBtn.textContent = 'Processing...';
+                downloadBtn.disabled = true;
+
+                const provider = document.querySelector('input[name="provider"]:checked').value;
+                const docType = document.querySelector('input[name="docType"]:checked').value;
+                const spec = SPECS[provider][docType];
+
+                const image = new Image();
+                image.onload = async () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = spec.width;
+                    canvas.height = spec.height;
+                    const ctx = canvas.getContext('2d');
+
+                    // Simple center-crop and resize
+                    const sourceRatio = image.width / image.height;
+                    const targetRatio = spec.width / spec.height;
+                    let sx = 0, sy = 0, sWidth = image.width, sHeight = image.height;
+
+                    if (sourceRatio > targetRatio) { // Source is wider
+                        sWidth = image.height * targetRatio;
+                        sx = (image.width - sWidth) / 2;
+                    } else { // Source is taller
+                        sHeight = image.width / targetRatio;
+                        sy = (image.height - sHeight) / 2;
+                    }
+                    ctx.drawImage(image, sx, sy, sWidth, sHeight, 0, 0, spec.width, spec.height);
+
+                    // Compression
+                    const dataUrl = canvas.toDataURL(`image/${spec.format}`);
+                    const initialBlob = await (await fetch(dataUrl)).blob();
+
+                    try {
+                        const options = {
+                            maxSizeMB: spec.maxSizeKB / 1024,
+                            useWebWorker: true,
+                        };
+                        processedBlob = await imageCompression(initialBlob, options);
+
+                        processedPreview.src = URL.createObjectURL(processedBlob);
+                        processedInfo.textContent = `Size: ${formatBytes(processedBlob.size)}`;
+                        if (processedBlob.size > spec.maxSizeKB * 1024) {
+                            processedInfo.style.color = 'var(--error-color)';
+                        } else {
+                            processedInfo.style.color = 'var(--success-color)';
+                        }
+                        downloadBtn.disabled = false;
+
+                    } catch (error) {
+                        console.error(error);
+                        processedInfo.textContent = 'Error processing image.';
+                        processedInfo.style.color = 'var(--error-color)';
+                    } finally {
+                        processBtn.disabled = false;
+                        processBtn.textContent = 'Process Image';
+                    }
+                };
+                image.src = URL.createObjectURL(originalFile);
+            }
+
+            function downloadImage() {
+                if (!processedBlob) return;
+                const provider = document.querySelector('input[name="provider"]:checked').value;
+                const docType = document.querySelector('input[name="docType"]:checked').value;
+                const spec = SPECS[provider][docType];
+
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(processedBlob);
+                a.download = `${docType}_${provider}.${spec.format}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            function resetAll() {
+                originalFile = null;
+                processedBlob = null;
+                fileInput.value = '';
+                originalPreview.src = '';
+                processedPreview.src = '';
+                originalInfo.textContent = 'Size: -';
+                processedInfo.textContent = 'Size: -';
+                processedInfo.style.color = 'inherit';
+                downloadBtn.disabled = true;
+                resizerSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            }
+
+            updateRequirements(); // Initial call
+        });
+    </script>
+</body>
+</html>

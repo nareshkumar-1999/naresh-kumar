@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Cropper</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        .cropper-area {
+            margin-bottom: 20px;
+        }
+        .img-container {
+            max-height: 50vh;
+            margin-bottom: 20px;
+        }
+        #image-to-crop {
+            display: block;
+            max-width: 100%;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container">
+                <header class="tool-header">
+                    <h1>Image Cropper</h1>
+                    <p class="description">मनचाहे हिस्से तक इमेज काटें।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="cropper-area hidden" id="cropper-section">
+                        <div class="img-container">
+                            <img id="image-to-crop" alt="Source Image">
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn" id="crop-download-btn">Crop & Download</button>
+                            <button class="btn" id="reset-btn">Choose Another Image</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const cropperSection = document.getElementById('cropper-section');
+            const imageToCrop = document.getElementById('image-to-crop');
+            const cropDownloadBtn = document.getElementById('crop-download-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let cropper = null;
+            let originalFileName = '';
+
+            // Trigger file input
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            // Handle file selection
+            fileInput.addEventListener('change', handleFile);
+
+            // Handle drag and drop
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFile();
+                }
+            });
+
+            function handleFile() {
+                const file = fileInput.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    originalFileName = file.name.split('.').slice(0, -1).join('.');
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        imageToCrop.src = e.target.result;
+                        uploadArea.classList.add('hidden');
+                        cropperSection.classList.remove('hidden');
+
+                        if (cropper) {
+                            cropper.destroy();
+                        }
+
+                        cropper = new Cropper(imageToCrop, {
+                            viewMode: 1,
+                            background: false,
+                            autoCropArea: 0.8,
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            // Crop and download
+            cropDownloadBtn.addEventListener('click', () => {
+                if (!cropper) return;
+
+                cropper.getCroppedCanvas().toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${originalFileName}-cropped.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 'image/png');
+            });
+
+            // Reset view
+            resetBtn.addEventListener('click', () => {
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+                fileInput.value = '';
+                imageToCrop.src = '';
+                cropperSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

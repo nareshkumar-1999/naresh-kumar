@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hindi Font Converter (Unicode ↔ KrutiDev) - HEMAN BAGHEL</title>
+    <meta name="description" content="Free online tool to convert between Hindi Unicode (Mangal) and legacy KrutiDev font for DTP and other purposes.">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        .converter-io {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        .converter-io textarea {
+            width: 100%;
+            min-height: 250px;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            resize: vertical;
+            transition: all 0.2s ease-in-out;
+        }
+        .unicode-font {
+            font-family: 'Mangal', 'Arial Unicode MS', sans-serif;
+        }
+        .krutidev-font {
+            font-family: 'Kruti Dev 010', 'Courier New', monospace;
+            font-size: 1.2rem;
+        }
+        .converter-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+        #copy-btn {
+            background: linear-gradient(90deg, #6c757d 0%, #adb5bd 100%);
+        }
+        .direction-selector {
+            text-align: center;
+            margin-bottom: 2rem;
+            background-color: #f8f9ff;
+            padding: 1rem;
+            border-radius: 50px;
+            display: inline-block;
+            border: 1px solid var(--border-color);
+        }
+        .direction-selector-wrapper {
+            text-align: center;
+        }
+        .direction-selector label {
+            margin: 0 1rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        @media (min-width: 768px) {
+            .converter-io {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#" class="active">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container">
+                <header class="tool-header">
+                    <h1>Hindi Font Converter</h1>
+                    <p class="description">यूनिकोड (मंगल) और कृतिदेव फ़ॉन्ट के बीच बदलें।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="direction-selector-wrapper">
+                        <div class="direction-selector">
+                            <label>
+                                <input type="radio" name="conversionDirection" value="unicode-to-krutidev" checked>
+                                Unicode → KrutiDev
+                            </label>
+                            <label>
+                                <input type="radio" name="conversionDirection" value="krutidev-to-unicode">
+                                KrutiDev → Unicode
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="converter-io">
+                        <div class="control-group">
+                            <label for="input-textarea" id="input-label"></label>
+                            <textarea id="input-textarea"></textarea>
+                        </div>
+                        <div class="control-group">
+                            <label for="output-textarea" id="output-label"></label>
+                            <textarea id="output-textarea" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="converter-actions">
+                        <button id="convert-btn" class="btn">Convert</button>
+                        <button id="copy-btn" class="btn">Copy Result</button>
+                        <button id="reset-btn" class="btn">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputTextArea = document.getElementById('input-textarea');
+            const outputTextArea = document.getElementById('output-textarea');
+            const inputLabel = document.getElementById('input-label');
+            const outputLabel = document.getElementById('output-label');
+            
+            const convertBtn = document.getElementById('convert-btn');
+            const copyBtn = document.getElementById('copy-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            
+            const directionRadios = document.querySelectorAll('input[name="conversionDirection"]');
+
+            const unicodeToKrutiMap = {
+                one: ['“', '”', 'å', '‘', '’', '»', '«', 'क़', 'ख़', 'ग़', 'ज़', 'ड़', 'ढ़', 'फ़', 'य़', 'ऱ', 'अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ', 'ए', 'ऐ', 'ओ', 'औ', 'अं', 'अः', 'क', 'ख', 'ग', 'घ', 'ङ', 'च', 'छ', 'ज', 'झ', 'ञ', 'ट', 'ठ', 'ड', 'ढ', 'ण', 'त', 'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब', 'भ', 'म', 'य', 'र', 'ल', 'व', 'श', 'ष', 'स', 'ह', 'ा', 'ि', 'ी', 'ु', 'ू', 'ृ', 'े', 'ै', 'ो', 'ौ', 'ं', 'ः', '्', '०', '१', '२', '३', '४', '५', '६', '७', '८', '९', '/', '`', 'ज्ञ', 'त्र', 'क्ष', 'श्र', '(', ')', '०', '१', '२', '३', '४', '५', '६', '७', '८', '९', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', '{', ']', '}', ';', ':', "'", '"', ',', '<', '.', '>', '?', '`', 'ज्ञ', 'त्र', 'क्ष', 'श्र', 'ऋ', 'ऑ', '>', '<', 'ऋ'],
+                two: ['“', '”', 'å', '‘', '’', '»', '«', 'd+', '[k+', 'x+', 't+', 'M+', '<+', 'i+', ';+', 'j+', 'v', 'vk', 'b', 'bZ', 'm', 'Å', '`', ',', ',s', 'vks', 'vkS', 'va', 'v%', 'd', 'Dk', 'x', '?', '³', 'p', 'N', 't', '>', '¥', 'V', 'B', 'M', '<', '.', 'r', 'Fk', 'n', '/', 'u', 'i', 'Q', 'c', 'Hk', 'e', 'o', 'j', 'y', 'o', 'k', '"', 'l', 'g', 'k', 'f', 'h', 'q', 'w', '`', 's', 'S', 'ks', 'kS', 'a', '%', '~', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '/', '`', 'K', '«', '{', 'J', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', '{', ']', '}', ';', ':', "'", '"', ',', '<', '.', '>', '?', '`', 'K', '«', '{', 'J', '`', 'v‚', '>', '<', '`']
+            };
+
+            const krutiToUnicodeMap = {
+                one: ['ñ', 'Q+Z', 'sas', 'aa', ')', '(', 'µ', '`', '°', 'º', '±', '·', '¸', '»', '¼', '½', '¾', '¿', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï', 'Ð', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ø', 'Ù', 'Ú', 'Û', 'Ü', 'Ý', 'Þ', 'ß', 'à', 'á', 'â', 'ã', 'ä', 'å', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ð', 'ñ', 'ò', 'ó', 'ô', 'õ', 'ö', 'ø', 'ù', 'ú', 'û', 'ü', 'ý', 'þ', 'ÿ', '¨', '©', '®', '¯', '¡', '¢', '£', '¤', '¥', '¦', '§', '«', '»', '¬', '­', 'I', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', ']', '^', '_', 'a', 'b', 'c', 'd', 'e', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~', '्', '़', '“', '”', '‘', '’'],
+                two: ['॰', 'Q+Z', 'sas', 'aa', '(', ')', 'µ', '`', '°', 'º', '±', '·', '¸', '»', '¼', '½', '¾', '¿', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï', 'Ð', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ø', 'Ù', 'Ú', 'Û', 'Ü', 'Ý', 'Þ', 'ß', 'à', 'á', 'â', 'ã', 'ä', 'å', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ð', 'ñ', 'ò', 'ó', 'ô', 'õ', 'ö', 'ø', 'ù', 'ú', 'û', 'ü', 'ý', 'þ', 'ÿ', '¨', '©', '®', '¯', '¡', '¢', '£', '¤', '¥', '¦', '§', '«', '»', '¬', '­', 'ई', 'ट', 'उ', 'व', 'ड', 'ढ', 'य', 'र', 'ज्ञ', 'द्व', 'द्य', 'ज्ञ', 'अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ए', 'ऐ', 'ओ', 'औ', 'क', 'ख', 'ग', 'घ', 'ङ', 'च', 'छ', 'ज', 'झ', 'ञ', 'ट', 'ठ', 'ड', 'ढ', 'ण', 'त', 'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब', 'भ', 'म', 'य', 'र', 'ल', 'व', 'श', 'ष', 'स', 'ह', 'क्ष', 'त्र', 'ज्ञ', 'ऋ', '्', '़', '“', '”', '‘', '’']
+            };
+
+            function convertUnicodeToKrutiDev(inputText) {
+                inputText = inputText.replace(/क़/g, "d+").replace(/ख़/g, "[k+").replace(/ग़/g, "x+").replace(/ज़/g, "t+").replace(/ड़/g, "M+").replace(/ढ़/g, "<+").replace(/फ़/g, "i+").replace(/य़/g, ";+").replace(/ऱ/g, "j+");
+                let processed_text = '';
+                let sthiti1 = 0, sthiti2 = 0, chale_chalo = 1;
+                const text_size = inputText.length;
+                const max_text_size = 6000;
+                while (chale_chalo == 1) {
+                    sthiti1 = sthiti2;
+                    if (sthiti2 < (text_size - max_text_size)) {
+                        sthiti2 += max_text_size;
+                        while (inputText.charAt(sthiti2) != ' ') { sthiti2--; }
+                    } else {
+                        sthiti2 = text_size;
+                        chale_chalo = 0;
+                    }
+                    let modified_substring = inputText.substring(sthiti1, sthiti2);
+                    modified_substring = modified_substring.replace(/f/g, " ि");
+                    let position_of_i = modified_substring.indexOf("ि");
+                    while (position_of_i != -1) {
+                        let character_left_to_i = modified_substring.charAt(position_of_i - 1);
+                        modified_substring = modified_substring.replace(character_left_to_i + "ि", "ि" + character_left_to_i);
+                        position_of_i = modified_substring.search(/ि/, position_of_i + 1);
+                    }
+                    let position_of_half_r = modified_substring.indexOf("Ê");
+                    while (position_of_half_r != -1) {
+                        let character_right_to_half_r = modified_substring.charAt(position_of_half_r + 1);
+                        let character_left_to_half_r = modified_substring.charAt(position_of_half_r - 1);
+                        modified_substring = modified_substring.replace(character_left_to_half_r + "Ê" + character_right_to_half_r, character_right_to_half_r + character_left_to_half_r + "Z");
+                        position_of_half_r = modified_substring.search(/Ê/, position_of_half_r + 1);
+                    }
+                    for (let i = 0; i < unicodeToKrutiMap.one.length; i++) {
+                        let idx = 0;
+                        while (idx != -1) {
+                            modified_substring = modified_substring.replace(unicodeToKrutiMap.one[i], unicodeToKrutiMap.two[i]);
+                            idx = modified_substring.indexOf(unicodeToKrutiMap.one[i]);
+                        }
+                    }
+                    processed_text += modified_substring;
+                }
+                return processed_text;
+            }
+
+            function convertKrutiDevToUnicode(inputText) {
+                let modified_substring = inputText.replace(/%/g, "ः");
+                modified_substring = modified_substring.replace(/f/g, "ि");
+                let position_of_i = modified_substring.indexOf("ि");
+                while (position_of_i != -1) {
+                    let char_at_next_pos = modified_substring.charAt(position_of_i + 1);
+                    let char_to_be_replaced = "ि" + char_at_next_pos;
+                    modified_substring = modified_substring.replace(char_to_be_replaced, char_at_next_pos + "ि");
+                    position_of_i = modified_substring.indexOf("ि", position_of_i + 1);
+                }
+                modified_substring = modified_substring.replace(/Z/g, "र्");
+                let position_of_r = modified_substring.indexOf("र्");
+                while (position_of_r != -1) {
+                    let probable_position_of_half_r = position_of_r - 1;
+                    let char_at_probable_pos = modified_substring.charAt(probable_position_of_half_r);
+                    while (char_at_probable_pos == '्') {
+                        probable_position_of_half_r = probable_position_of_half_r - 1;
+                        char_at_probable_pos = modified_substring.charAt(probable_position_of_half_r);
+                    }
+                    let char_to_be_replaced = modified_substring.substr(probable_position_of_half_r, (position_of_r - probable_position_of_half_r));
+                    let new_replacement_string = "र्" + char_to_be_replaced;
+                    char_to_be_replaced = char_to_be_replaced + "र्";
+                    modified_substring = modified_substring.replace(char_to_be_replaced, new_replacement_string);
+                    position_of_r = modified_substring.indexOf("र्", position_of_r + 2);
+                }
+                for (let i = 0; i < krutiToUnicodeMap.one.length; i++) {
+                    modified_substring = modified_substring.replace(new RegExp(krutiToUnicodeMap.one[i], "g"), krutiToUnicodeMap.two[i]);
+                }
+                return modified_substring.replace(/=/g, ".").replace(/_/g, "।").replace(/’/g, "'").replace(/‘/g, "'");
+            }
+
+            function updateUI() {
+                const direction = document.querySelector('input[name="conversionDirection"]:checked').value;
+                
+                // Swap text content if user changes direction
+                const temp = inputTextArea.value;
+                inputTextArea.value = outputTextArea.value;
+                outputTextArea.value = temp;
+
+                if (direction === 'unicode-to-krutidev') {
+                    inputLabel.textContent = 'यहाँ अपना यूनिकोड टेक्स्ट पेस्ट करें (Paste Unicode Text Here)';
+                    outputLabel.textContent = 'कन्वर्ट किया हुआ कृतिदेव टेक्स्ट (Converted KrutiDev Text)';
+                    inputTextArea.placeholder = 'जैसे: भारत एक महान देश है।';
+                    outputTextArea.placeholder = 'कन्वर्ट किया हुआ टेक्स्ट यहाँ दिखेगा...';
+                    inputTextArea.classList.remove('krutidev-font');
+                    inputTextArea.classList.add('unicode-font');
+                    outputTextArea.classList.remove('unicode-font');
+                    outputTextArea.classList.add('krutidev-font');
+                } else {
+                    inputLabel.textContent = 'यहाँ अपना कृतिदेव टेक्स्ट पेस्ट करें (Paste KrutiDev Text Here)';
+                    outputLabel.textContent = 'कन्वर्ट किया हुआ यूनिकोड टेक्स्ट (Converted Unicode Text)';
+                    inputTextArea.placeholder = "tSlsr ,d egku ns'k gSA";
+                    outputTextArea.placeholder = 'कन्वर्ट किया हुआ टेक्स्ट यहाँ दिखेगा...';
+                    inputTextArea.classList.remove('unicode-font');
+                    inputTextArea.classList.add('krutidev-font');
+                    outputTextArea.classList.remove('krutidev-font');
+                    outputTextArea.classList.add('unicode-font');
+                }
+            }
+
+            function handleConvert() {
+                const direction = document.querySelector('input[name="conversionDirection"]:checked').value;
+                const inputText = inputTextArea.value;
+                if (direction === 'unicode-to-krutidev') {
+                    outputTextArea.value = convertUnicodeToKrutiDev(inputText);
+                } else {
+                    outputTextArea.value = convertKrutiDevToUnicode(inputText);
+                }
+            }
+
+            function copyResult() {
+                if (outputTextArea.value) {
+                    outputTextArea.select();
+                    document.execCommand('copy');
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                    }, 2000);
+                }
+            }
+
+            function resetAll() {
+                inputTextArea.value = '';
+                outputTextArea.value = '';
+            }
+
+            directionRadios.forEach(radio => radio.addEventListener('change', updateUI));
+            convertBtn.addEventListener('click', handleConvert);
+            copyBtn.addEventListener('click', copyResult);
+            resetBtn.addEventListener('click', resetAll);
+
+            // Initial UI setup
+            updateUI();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Sharpen Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        #image-canvas {
+            max-width: 100%;
+            max-height: 65vh;
+            object-fit: contain;
+        }
+        #status-message {
+            text-align: center;
+            color: var(--text-light);
+            margin-top: 15px;
+            height: 20px;
+        }
+        .action-buttons {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container">
+                <header class="tool-header">
+                    <h1>Image Sharpen Tool</h1>
+                    <p class="description">धुंधली इमेज को शार्प करें।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="sharpen-wrapper hidden" id="sharpen-section">
+                        <div id="canvas-container">
+                            <canvas id="image-canvas"></canvas>
+                        </div>
+                        <div class="controls-panel">
+                            <div class="control-group">
+                                <label for="sharpen-slider">Sharpen Amount</label>
+                                <div class="slider-group">
+                                    <input type="range" id="sharpen-slider" min="0" max="100" value="0">
+                                    <span id="sharpen-value">0%</span>
+                                </div>
+                            </div>
+                            <div id="status-message"></div>
+                            <div class="action-buttons">
+                                <button class="btn" id="download-btn">Download Image</button>
+                                <button class="btn" id="reset-btn">Choose Another</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const sharpenSection = document.getElementById('sharpen-section');
+            const canvas = document.getElementById('image-canvas');
+            const ctx = canvas.getContext('2d');
+
+            const sharpenSlider = document.getElementById('sharpen-slider');
+            const sharpenValue = document.getElementById('sharpen-value');
+            const statusMessage = document.getElementById('status-message');
+            const downloadBtn = document.getElementById('download-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let mainImage = new Image();
+            let originalFile = null;
+            let originalImageData = null;
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect();
+                }
+            });
+
+            sharpenSlider.addEventListener('input', () => sharpenValue.textContent = `${sharpenSlider.value}%`);
+            sharpenSlider.addEventListener('change', applySharpen);
+
+            downloadBtn.addEventListener('click', downloadImage);
+            resetBtn.addEventListener('click', resetAll);
+
+            function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                
+                originalFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    mainImage.onload = () => {
+                        canvas.width = mainImage.width;
+                        canvas.height = mainImage.height;
+                        ctx.drawImage(mainImage, 0, 0);
+                        originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        
+                        sharpenSlider.value = 0;
+                        sharpenValue.textContent = '0%';
+                        uploadArea.classList.add('hidden');
+                        sharpenSection.classList.remove('hidden');
+                    };
+                    mainImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function applySharpen() {
+                if (!originalImageData) return;
+
+                const amount = parseInt(sharpenSlider.value) / 100;
+                if (amount === 0) {
+                    ctx.putImageData(originalImageData, 0, 0);
+                    return;
+                }
+
+                statusMessage.textContent = 'Processing...';
+                sharpenSlider.disabled = true;
+                downloadBtn.disabled = true;
+
+                setTimeout(() => {
+                    const src = originalImageData.data;
+                    const width = originalImageData.width;
+                    const height = originalImageData.height;
+                    
+                    const output = ctx.createImageData(width, height);
+                    const dst = output.data;
+
+                    const kernel = [0, -1, 0, -1, 5, -1, 0, -1, 0];
+                    
+                    for (let y = 1; y < height - 1; y++) {
+                        for (let x = 1; x < width - 1; x++) {
+                            const i = (y * width + x) * 4;
+                            let sr = 0, sg = 0, sb = 0;
+
+                            for (let ky = -1; ky <= 1; ky++) {
+                                for (let kx = -1; kx <= 1; kx++) {
+                                    const kernelIndex = (ky + 1) * 3 + (kx + 1);
+                                    const weight = kernel[kernelIndex];
+                                    if (weight === 0) continue;
+                                    
+                                    const pixelIndex = ((y + ky) * width + (x + kx)) * 4;
+                                    sr += src[pixelIndex] * weight;
+                                    sg += src[pixelIndex + 1] * weight;
+                                    sb += src[pixelIndex + 2] * weight;
+                                }
+                            }
+                            
+                            const origR = src[i];
+                            const origG = src[i + 1];
+                            const origB = src[i + 2];
+
+                            dst[i]     = origR + (sr - origR) * amount;
+                            dst[i + 1] = origG + (sg - origG) * amount;
+                            dst[i + 2] = origB + (sb - origB) * amount;
+                            dst[i + 3] = src[i + 3];
+                        }
+                    }
+
+                    // Copy borders to avoid black edges
+                    for (let y = 0; y < height; y++) {
+                        for (let x = 0; x < width; x++) {
+                            if (x === 0 || x === width - 1 || y === 0 || y === height - 1) {
+                                const i = (y * width + x) * 4;
+                                dst[i] = src[i];
+                                dst[i+1] = src[i+1];
+                                dst[i+2] = src[i+2];
+                                dst[i+3] = src[i+3];
+                            }
+                        }
+                    }
+
+                    ctx.putImageData(output, 0, 0);
+
+                    statusMessage.textContent = '';
+                    sharpenSlider.disabled = false;
+                    downloadBtn.disabled = false;
+                }, 10);
+            }
+
+            function downloadImage() {
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                const name = originalFile.name.split('.').slice(0, -1).join('.');
+                a.download = `${name}-sharpened.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            function resetAll() {
+                fileInput.value = '';
+                mainImage.src = '';
+                originalFile = null;
+                originalImageData = null;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                sharpenSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

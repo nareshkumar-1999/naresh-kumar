@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Color Picker</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        #image-canvas {
+            display: block;
+            max-width: 100%;
+            max-height: 60vh;
+            object-fit: contain;
+        }
+        .magnifier {
+            width: 150px;
+            height: 150px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+            image-rendering: pixelated;
+            align-self: center;
+        }
+        .magnifier-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        .color-info {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .color-preview {
+            width: 100%;
+            height: 60px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .color-value {
+            margin-bottom: 10px;
+        }
+        .color-value label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+        .color-value .input-group {
+            display: flex;
+        }
+        .color-value input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px 0 0 4px;
+            background: #fff;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .color-value button {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-left: none;
+            background: #f1f3f5;
+            cursor: pointer;
+            border-radius: 0 4px 4px 0;
+        }
+        .action-buttons {
+            margin-top: auto;
+            text-align: center;
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+        @media (max-width: 768px) {
+            .controls-panel {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container" style="max-width: 1000px;">
+                <header class="tool-header">
+                    <h1>Image Color Picker</h1>
+                    <p class="description">किसी भी पिक्सल का HEX/RGB कोड पाएँ।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="picker-wrapper hidden" id="picker-section">
+                        <div id="canvas-container" style="cursor: crosshair;">
+                            <canvas id="image-canvas"></canvas>
+                        </div>
+                        <div class="controls-panel" style="width: 250px;">
+                            <div class="magnifier">
+                                <canvas class="magnifier-canvas" id="magnifier-canvas" width="150" height="150"></canvas>
+                            </div>
+                            <div class="color-info">
+                                <div class="color-preview" id="color-preview"></div>
+                                <div class="color-value">
+                                    <label for="hex-value">HEX</label>
+                                    <div class="input-group">
+                                        <input type="text" id="hex-value" readonly>
+                                        <button id="copy-hex">Copy</button>
+                                    </div>
+                                </div>
+                                <div class="color-value">
+                                    <label for="rgb-value">RGB</label>
+                                    <div class="input-group">
+                                        <input type="text" id="rgb-value" readonly>
+                                        <button id="copy-rgb">Copy</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn" id="reset-btn">Choose Another</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const pickerSection = document.getElementById('picker-section');
+            
+            const canvas = document.getElementById('image-canvas');
+            const ctx = canvas.getContext('2d');
+            const magnifierCanvas = document.getElementById('magnifier-canvas');
+            const magnifierCtx = magnifierCanvas.getContext('2d');
+
+            const colorPreview = document.getElementById('color-preview');
+            const hexValue = document.getElementById('hex-value');
+            const rgbValue = document.getElementById('rgb-value');
+            const copyHexBtn = document.getElementById('copy-hex');
+            const copyRgbBtn = document.getElementById('copy-rgb');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let image = new Image();
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect();
+                }
+            });
+
+            function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    image.onload = () => {
+                        const aspectRatio = image.width / image.height;
+                        const container = document.getElementById('canvas-container');
+                        let newWidth = container.clientWidth;
+                        let newHeight = newWidth / aspectRatio;
+
+                        if (newHeight > container.clientHeight) {
+                            newHeight = container.clientHeight;
+                            newWidth = newHeight * aspectRatio;
+                        }
+
+                        canvas.width = newWidth;
+                        canvas.height = newHeight;
+                        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                        
+                        uploadArea.classList.add('hidden');
+                        pickerSection.classList.remove('hidden');
+                    };
+                    image.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function rgbToHex(r, g, b) {
+                return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+            }
+
+            function updateColorInfo(x, y) {
+                const pixel = ctx.getImageData(x, y, 1, 1).data;
+                const [r, g, b] = pixel;
+                
+                const hex = rgbToHex(r, g, b);
+                const rgb = `rgb(${r}, ${g}, ${b})`;
+
+                colorPreview.style.backgroundColor = hex;
+                hexValue.value = hex;
+                rgbValue.value = rgb;
+
+                // Update magnifier
+                magnifierCtx.imageSmoothingEnabled = false;
+                magnifierCtx.clearRect(0, 0, 150, 150);
+                magnifierCtx.drawImage(canvas, x - 5, y - 5, 10, 10, 0, 0, 150, 150);
+                
+                // Draw crosshair
+                magnifierCtx.strokeStyle = '#FF0000';
+                magnifierCtx.lineWidth = 2;
+                magnifierCtx.beginPath();
+                magnifierCtx.moveTo(75, 65);
+                magnifierCtx.lineTo(75, 85);
+                magnifierCtx.moveTo(65, 75);
+                magnifierCtx.lineTo(85, 75);
+                magnifierCtx.stroke();
+            }
+
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = Math.floor(e.clientX - rect.left);
+                const y = Math.floor(e.clientY - rect.top);
+                updateColorInfo(x, y);
+            });
+
+            canvas.addEventListener('click', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = Math.floor(e.clientX - rect.left);
+                const y = Math.floor(e.clientY - rect.top);
+                updateColorInfo(x, y);
+                // You could add functionality here to "lock" the color
+            });
+
+            function copyToClipboard(text, btn) {
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = btn.textContent;
+                    btn.textContent = 'Copied!';
+                    setTimeout(() => { btn.textContent = originalText; }, 2000);
+                });
+            }
+
+            copyHexBtn.addEventListener('click', () => copyToClipboard(hexValue.value, copyHexBtn));
+            copyRgbBtn.addEventListener('click', () => copyToClipboard(rgbValue.value, copyRgbBtn));
+
+            resetBtn.addEventListener('click', () => {
+                fileInput.value = '';
+                image.src = '';
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pickerSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

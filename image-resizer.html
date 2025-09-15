@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Resizer</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        .resize-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .preview-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .preview-title {
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 600;
+        }
+        #image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+        #download-btn {
+            background: linear-gradient(90deg, #00b09b 0%, #96c93d 100%);
+        }
+        .message {
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .processing {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        #size-option {
+            display: none;
+        }
+        @media (max-width: 600px) {
+            .resize-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container" style="max-width: 800px;">
+                <header class="tool-header">
+                    <h1>Image Resizer</h1>
+                    <p class="description">Quickly resize, compress, and edit your images.</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <button class="btn" id="upload-btn">Select Image</button>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="resize-options">
+                        <div class="control-group">
+                            <label for="width">Width (px):</label>
+                            <input type="number" id="width" placeholder="Width">
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="height">Height (px):</label>
+                            <input type="number" id="height" placeholder="Height">
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="ratio">Maintain aspect ratio:</label>
+                            <select id="ratio">
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="format">Output format:</label>
+                            <select id="format">
+                                <option value="png">PNG</option>
+                                <option value="jpeg">JPEG</option>
+                                <option value="webp">WEBP</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group" id="size-option">
+                            <label for="target-size">Target Size (KB, optional):</label>
+                            <input type="number" id="target-size" placeholder="e.g., 500">
+                        </div>
+                    </div>
+                    
+                    <div class="preview-container">
+                        <h3 class="preview-title">Image Preview</h3>
+                        <img id="image-preview" alt="Resized image preview" class="hidden">
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn" id="reset-btn">Reset</button>
+                        <button class="btn" id="resize-btn">Resize Image</button>
+                        <button class="btn" id="download-btn">Download</button>
+                    </div>
+                    
+                    <div id="message" class="message hidden"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
+            const fileInput = document.getElementById('file-input');
+            const uploadBtn = document.getElementById('upload-btn');
+            const uploadArea = document.getElementById('upload-area');
+            const widthInput = document.getElementById('width');
+            const heightInput = document.getElementById('height');
+            const ratioSelect = document.getElementById('ratio');
+            const formatSelect = document.getElementById('format');
+            const resizeBtn = document.getElementById('resize-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const imagePreview = document.getElementById('image-preview');
+            const messageDiv = document.getElementById('message');
+            const targetSizeInput = document.getElementById('target-size');
+            const sizeOptionDiv = document.getElementById('size-option');
+            
+            let originalImage = null;
+            let resizedImageBlob = null;
+            
+            // Event listeners
+            uploadBtn.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', handleImageUpload);
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#4776E6';
+                uploadArea.style.backgroundColor = '#eef0ff';
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = '#4776E6';
+                uploadArea.style.backgroundColor = '#f8f9ff';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#4776E6';
+                uploadArea.style.backgroundColor = '#f8f9ff';
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleImageUpload();
+                }
+            });
+            
+            widthInput.addEventListener('input', maintainAspectRatio);
+            heightInput.addEventListener('input', maintainAspectRatio);
+            
+            formatSelect.addEventListener('change', () => {
+                if (formatSelect.value === 'jpeg' || formatSelect.value === 'webp') {
+                    sizeOptionDiv.style.display = 'flex';
+                } else {
+                    sizeOptionDiv.style.display = 'none';
+                }
+            });
+            
+            resizeBtn.addEventListener('click', () => resizeImage());
+            resetBtn.addEventListener('click', resetAll);
+            downloadBtn.addEventListener('click', downloadImage);
+            
+            // Functions
+            function handleImageUpload() {
+                if (fileInput.files && fileInput.files[0]) {
+                    const file = fileInput.files[0];
+                    
+                    if (!file.type.match('image.*')) {
+                        showMessage('Please select an image file.', 'error');
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        originalImage = new Image();
+                        originalImage.onload = function() {
+                            widthInput.value = originalImage.width;
+                            heightInput.value = originalImage.height;
+                            
+                            imagePreview.src = e.target.result;
+                            imagePreview.classList.remove('hidden');
+                            
+                            showMessage('Image uploaded successfully!', 'success');
+                        };
+                        originalImage.src = e.target.result;
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            }
+            
+            function maintainAspectRatio() {
+                if (ratioSelect.value !== 'yes' || !originalImage) return;
+                
+                if (this === widthInput) {
+                    heightInput.value = Math.round(originalImage.height * (widthInput.value / originalImage.width));
+                } else {
+                    widthInput.value = Math.round(originalImage.width * (heightInput.value / originalImage.height));
+                }
+            }
+            
+            async function resizeImage() { // Made the function async
+                if (!originalImage) {
+                    showMessage('Please upload an image first.', 'error');
+                    return;
+                }
+                
+                // Disable buttons during processing
+                resizeBtn.disabled = true;
+                downloadBtn.disabled = true;
+                resetBtn.disabled = true;
+                
+                // Create off-screen canvas for resizing
+                try {
+                    const width = parseInt(widthInput.value);
+                    const height = parseInt(heightInput.value);
+
+                    if (!width || !height || width <= 0 || height <= 0) {
+                        showMessage('Please enter valid dimensions.', 'error');
+                        return; // finally will still run
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(originalImage, 0, 0, width, height);
+                    
+                    // Get the format
+                    const format = formatSelect.value;
+                    const targetSizeRaw = targetSizeInput.value;
+                    const targetSizeKB = Number(targetSizeRaw);
+
+                    // Check for invalid number in target size
+                    if (targetSizeRaw && (isNaN(targetSizeKB) || targetSizeKB <= 0)) {
+                        showMessage('Please enter a valid positive number for target size (KB).', 'error');
+                        return; // finally will still run
+                    }
+
+                    // If user wants to control size and format is supported
+                    if (targetSizeKB > 0 && (format === 'jpeg' || format === 'webp')) {
+                        showMessage('Optimizing for file size... Please wait.', 'processing');
+                        
+                        // Allow UI to update before heavy processing
+                        await new Promise(resolve => setTimeout(resolve, 50));
+
+                        const targetSizeBytes = targetSizeKB * 1024;
+
+                        // Helper to get blob as a promise
+                        const getBlob = (canvas, format, quality) => {
+                            return new Promise(resolve => {
+                                canvas.toBlob(blob => resolve(blob), `image/${format}`, quality);
+                            });
+                        };
+
+                        // Check if lowest quality is already too big
+                        const lowestQualityBlob = await getBlob(canvas, format, 0);
+                        if (lowestQualityBlob && lowestQualityBlob.size > targetSizeBytes) {
+                            resizedImageBlob = lowestQualityBlob;
+                            const finalSize = (resizedImageBlob.size / 1024).toFixed(2);
+                            showMessage(`Cannot reach target size. Smallest is ${finalSize} KB.`, 'error');
+                        } else {
+                            // Binary search for the best quality
+                            let min = 0, max = 1;
+                            let bestBlob = lowestQualityBlob;
+
+                            for (let i = 0; i < 10; i++) { // 10 iterations for good precision
+                                let mid = (min + max) / 2;
+                                let currentBlob = await getBlob(canvas, format, mid);
+                                if (currentBlob && currentBlob.size <= targetSizeBytes) {
+                                    bestBlob = currentBlob; // This is a valid candidate
+                                    min = mid; // Try for higher quality
+                                } else {
+                                    max = mid; // Too big, reduce quality
+                                }
+                            }
+                            resizedImageBlob = bestBlob;
+                            const finalSize = (resizedImageBlob.size / 1024).toFixed(2);
+                            showMessage(`Image optimized to ${finalSize} KB!`, 'success');
+                        }
+
+                        if (resizedImageBlob) {
+                            imagePreview.src = URL.createObjectURL(resizedImageBlob);
+                        }
+
+                    } else { // Original logic for PNG or if no target size is set
+                        await new Promise(resolve => {
+                            canvas.toBlob(function(blob) {
+                                if (blob) {
+                                    resizedImageBlob = blob;
+                                    imagePreview.src = URL.createObjectURL(resizedImageBlob);
+                                    const finalSize = (blob.size / 1024).toFixed(2);
+                                    showMessage(`Image resized to ${width}×${height} pixels (${finalSize} KB).`, 'success');
+                                } else {
+                                    showMessage('Failed to process image.', 'error');
+                                }
+                                resolve();
+                            }, `image/${format}`, 0.9);
+                        });
+                    }
+                } finally {
+                    // Re-enable buttons after processing is done
+                    resizeBtn.disabled = false;
+                    downloadBtn.disabled = false;
+                    resetBtn.disabled = false;
+                }
+            }
+            
+            function downloadImage() {
+                if (!resizedImageBlob) {
+                    showMessage('Please resize an image first.', 'error');
+                    return;
+                }
+                
+                const url = URL.createObjectURL(resizedImageBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `resized-image.${formatSelect.value}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showMessage('Image downloaded successfully!', 'success');
+            }
+            
+            function resetAll() {
+                fileInput.value = '';
+                widthInput.value = '';
+                heightInput.value = '';
+                targetSizeInput.value = '';
+                imagePreview.classList.add('hidden');
+                originalImage = null;
+                resizedImageBlob = null;
+                messageDiv.classList.add('hidden');
+                sizeOptionDiv.style.display = 'none';
+                formatSelect.value = 'png';
+            }
+            
+            function showMessage(text, type) {
+                messageDiv.textContent = text;
+                messageDiv.className = 'message';
+                messageDiv.classList.add(type);
+                messageDiv.classList.remove('hidden');
+                
+                // Hide message after 3 seconds
+                setTimeout(() => {
+                    messageDiv.classList.add('hidden');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

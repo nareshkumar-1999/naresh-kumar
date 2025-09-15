@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Watermark Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .watermark-wrapper {
+            display: flex;
+            gap: 30px;
+        }
+
+        #canvas-container {
+            flex: 1;
+            max-height: 65vh;
+        }
+
+        #image-canvas {
+            max-width: 100%;
+            max-height: 65vh;
+            object-fit: contain;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-gradient-end);
+            border-bottom-color: var(--primary-gradient-end);
+        }
+
+        .control-group input[type="file"] {
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+
+        @media (max-width: 900px) {
+            .watermark-wrapper {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container">
+                <header class="tool-header">
+                    <h1>Image Watermark Tool</h1>
+                    <p class="description">फोटो पर टेक्स्ट/लोगो वॉटरमार्क लगाएँ।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="watermark-wrapper hidden" id="watermark-section">
+                        <div id="canvas-container">
+                            <canvas id="image-canvas"></canvas>
+                        </div>
+                        <div class="controls-panel" style="width: 320px;">
+                            <div class="tab-buttons">
+                                <button class="tab-btn active" data-tab="text">Text Watermark</button>
+                                <button class="tab-btn" data-tab="logo">Logo Watermark</button>
+                            </div>
+
+                            <div id="text-controls">
+                                <div class="control-group">
+                                    <label for="text-input">Watermark Text</label>
+                                    <input type="text" id="text-input" value="Your Watermark">
+                                </div>
+                                <div class="control-group">
+                                    <label for="font-size-slider">Font Size</label>
+                                    <div class="slider-group">
+                                        <input type="range" id="font-size-slider" min="10" max="200" value="50">
+                                        <span id="font-size-value">50px</span>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label for="color-input">Color</label>
+                                    <input type="color" id="color-input" value="#FFFFFF">
+                                </div>
+                            </div>
+
+                            <div id="logo-controls" class="hidden">
+                                <div class="control-group">
+                                    <label for="logo-input">Upload Logo</label>
+                                    <input type="file" id="logo-input" accept="image/png, image/jpeg">
+                                </div>
+                                <div class="control-group">
+                                    <label for="logo-size-slider">Logo Size</label>
+                                    <div class="slider-group">
+                                        <input type="range" id="logo-size-slider" min="10" max="100" value="30">
+                                        <span id="logo-size-value">30%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="opacity-slider">Opacity</label>
+                                <div class="slider-group">
+                                    <input type="range" id="opacity-slider" min="0" max="1" step="0.05" value="0.5">
+                                    <span id="opacity-value">0.5</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="position-select">Position</label>
+                                <select id="position-select">
+                                    <option value="center">Center</option>
+                                    <option value="top-left">Top Left</option>
+                                    <option value="top-right">Top Right</option>
+                                    <option value="bottom-left">Bottom Left</option>
+                                    <option value="bottom-right">Bottom Right</option>
+                                    <option value="tiled">Tiled</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="rotation-slider">Rotation</label>
+                                <div class="slider-group">
+                                    <input type="range" id="rotation-slider" min="-45" max="45" value="0">
+                                    <span id="rotation-value">0°</span>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="btn" id="download-btn">Download Image</button>
+                                <button class="btn" id="reset-btn">Choose Another</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Main elements
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const watermarkSection = document.getElementById('watermark-section');
+            const canvas = document.getElementById('image-canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Tab elements
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const textControls = document.getElementById('text-controls');
+            const logoControls = document.getElementById('logo-controls');
+
+            // Control elements
+            const textInput = document.getElementById('text-input');
+            const fontSizeSlider = document.getElementById('font-size-slider');
+            const fontSizeValue = document.getElementById('font-size-value');
+            const colorInput = document.getElementById('color-input');
+            const logoInput = document.getElementById('logo-input');
+            const logoSizeSlider = document.getElementById('logo-size-slider');
+            const logoSizeValue = document.getElementById('logo-size-value');
+            const opacitySlider = document.getElementById('opacity-slider');
+            const opacityValue = document.getElementById('opacity-value');
+            const positionSelect = document.getElementById('position-select');
+            const rotationSlider = document.getElementById('rotation-slider');
+            const rotationValue = document.getElementById('rotation-value');
+            const downloadBtn = document.getElementById('download-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let mainImage = new Image();
+            let logoImage = new Image();
+            let originalFile = null;
+            let currentTab = 'text';
+
+            // --- Event Listeners ---
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            logoInput.addEventListener('change', handleLogoSelect);
+
+            // Drag & Drop
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect();
+                }
+            });
+
+            // Controls
+            [textInput, fontSizeSlider, colorInput, logoSizeSlider, opacitySlider, positionSelect, rotationSlider].forEach(el => {
+                el.addEventListener('input', drawWatermark);
+            });
+
+            // Sliders value display
+            fontSizeSlider.addEventListener('input', () => fontSizeValue.textContent = `${fontSizeSlider.value}px`);
+            logoSizeSlider.addEventListener('input', () => logoSizeValue.textContent = `${logoSizeSlider.value}%`);
+            opacitySlider.addEventListener('input', () => opacityValue.textContent = opacitySlider.value);
+            rotationSlider.addEventListener('input', () => rotationValue.textContent = `${rotationSlider.value}°`);
+
+            // Tabs
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentTab = btn.dataset.tab;
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    textControls.classList.toggle('hidden', currentTab !== 'text');
+                    logoControls.classList.toggle('hidden', currentTab !== 'logo');
+                    drawWatermark();
+                });
+            });
+
+            downloadBtn.addEventListener('click', downloadImage);
+            resetBtn.addEventListener('click', resetAll);
+
+            // --- Functions ---
+
+            function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                
+                originalFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    mainImage.onload = () => {
+                        canvas.width = mainImage.width;
+                        canvas.height = mainImage.height;
+                        drawWatermark();
+                        uploadArea.classList.add('hidden');
+                        watermarkSection.classList.remove('hidden');
+                    };
+                    mainImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function handleLogoSelect() {
+                const file = logoInput.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    logoImage.onload = () => drawWatermark();
+                    logoImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function drawWatermark() {
+                if (!mainImage.src) return;
+
+                // 1. Draw main image
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(mainImage, 0, 0);
+
+                // 2. Prepare watermark context
+                ctx.save();
+                ctx.globalAlpha = opacitySlider.value;
+                ctx.fillStyle = colorInput.value;
+                ctx.font = `${fontSizeSlider.value}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                const angle = parseInt(rotationSlider.value) * Math.PI / 180;
+                const position = positionSelect.value;
+
+                // 3. Draw based on type and position
+                if (position === 'tiled') {
+                    drawTiledWatermark(angle);
+                } else {
+                    drawSingleWatermark(position, angle);
+                }
+
+                ctx.restore();
+            }
+
+            function drawSingleWatermark(position, angle) {
+                const { x, y } = getCoordinates(position);
+                ctx.translate(x, y);
+                ctx.rotate(angle);
+                
+                if (currentTab === 'text') {
+                    ctx.fillText(textInput.value, 0, 0);
+                } else if (currentTab === 'logo' && logoImage.src) {
+                    const logoWidth = mainImage.width * (logoSizeSlider.value / 100);
+                    const logoHeight = logoWidth / (logoImage.width / logoImage.height);
+                    ctx.drawImage(logoImage, -logoWidth / 2, -logoHeight / 2, logoWidth, logoHeight);
+                }
+                
+                ctx.rotate(-angle);
+                ctx.translate(-x, -y);
+            }
+
+            function drawTiledWatermark(angle) {
+                const gap = 100;
+                for (let y = -gap; y < canvas.height + gap; y += (parseInt(fontSizeSlider.value) + gap)) {
+                    for (let x = -gap; x < canvas.width + gap; x += (ctx.measureText(textInput.value).width + gap)) {
+                        ctx.translate(x, y);
+                        ctx.rotate(angle);
+                        if (currentTab === 'text') {
+                            ctx.fillText(textInput.value, 0, 0);
+                        } else if (currentTab === 'logo' && logoImage.src) {
+                            const logoWidth = mainImage.width * (logoSizeSlider.value / 100);
+                            const logoHeight = logoWidth / (logoImage.width / logoImage.height);
+                            ctx.drawImage(logoImage, -logoWidth / 2, -logoHeight / 2, logoWidth, logoHeight);
+                        }
+                        ctx.rotate(-angle);
+                        ctx.translate(-x, -y);
+                    }
+                }
+            }
+
+            function getCoordinates(position) {
+                const margin = 20;
+                let x, y;
+                switch (position) {
+                    case 'top-left':
+                        x = margin + (ctx.measureText(textInput.value).width / 2);
+                        y = margin + (parseInt(fontSizeSlider.value) / 2);
+                        break;
+                    case 'top-right':
+                        x = canvas.width - margin - (ctx.measureText(textInput.value).width / 2);
+                        y = margin + (parseInt(fontSizeSlider.value) / 2);
+                        break;
+                    case 'bottom-left':
+                        x = margin + (ctx.measureText(textInput.value).width / 2);
+                        y = canvas.height - margin - (parseInt(fontSizeSlider.value) / 2);
+                        break;
+                    case 'bottom-right':
+                        x = canvas.width - margin - (ctx.measureText(textInput.value).width / 2);
+                        y = canvas.height - margin - (parseInt(fontSizeSlider.value) / 2);
+                        break;
+                    case 'center':
+                    default:
+                        x = canvas.width / 2;
+                        y = canvas.height / 2;
+                }
+                return { x, y };
+            }
+
+            function downloadImage() {
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                const name = originalFile.name.split('.').slice(0, -1).join('.');
+                a.download = `${name}-watermarked.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            function resetAll() {
+                fileInput.value = '';
+                logoInput.value = '';
+                mainImage.src = '';
+                logoImage.src = '';
+                originalFile = null;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                watermarkSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

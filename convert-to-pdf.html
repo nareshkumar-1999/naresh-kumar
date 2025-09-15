@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert Files to PDF</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+            background-color: #f8f9ff;
+            border-radius: 8px;
+            min-height: 150px;
+        }
+        .img-thumbnail {
+            position: relative;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            height: 120px;
+        }
+        .img-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .img-thumbnail .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 24px;
+            text-align: center;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        .action-buttons {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html">Image Tools</a></li>
+                <li><a href="pdf-tools.html" class="active">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container" style="max-width: 900px;">
+                <header class="tool-header">
+                    <h1>Convert Files to PDF</h1>
+                    <p class="description">इमेज, वर्ड, और एक्सेल फाइलों को PDF में बदलें।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop files here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/jpeg, image/png, .doc, .docx, .xls, .xlsx, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" multiple>
+                    </div>
+                    
+                    <div class="converter-wrapper hidden" id="converter-section">
+                        <div class="image-preview-grid" id="image-preview-grid">
+                            <!-- Image thumbnails will be added here -->
+                        </div>
+                        
+                        <div class="options-grid">
+                            <div class="control-group">
+                                <label for="page-size">Page Size</label>
+                                <select id="page-size">
+                                    <option value="a4" selected>A4</option>
+                                    <option value="letter">Letter</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="orientation">Orientation</label>
+                                <select id="orientation">
+                                    <option value="p" selected>Portrait</option>
+                                    <option value="l">Landscape</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="margin">Margin</label>
+                                <select id="margin">
+                                    <option value="0">No Margin</option>
+                                    <option value="10" selected>Small Margin (10mm)</option>
+                                    <option value="20">Big Margin (20mm)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn" id="convert-btn">Convert to PDF</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const { jsPDF } = window.jspdf;
+
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const converterSection = document.getElementById('converter-section');
+            const imagePreviewGrid = document.getElementById('image-preview-grid');
+            const convertBtn = document.getElementById('convert-btn');
+
+            let uploadedFiles = [];
+
+            // --- Event Listeners ---
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect();
+            });
+
+            convertBtn.addEventListener('click', convertToPdf);
+
+            // --- Functions ---
+            function handleFileSelect() {
+                const allFiles = Array.from(fileInput.files);
+                if (allFiles.length === 0) return;
+
+                const imageFiles = allFiles.filter(file => file.type.startsWith('image/'));
+                const otherFiles = allFiles.filter(file => !file.type.startsWith('image/'));
+
+                if (otherFiles.length > 0) {
+                    const unsupportedTypes = new Set(otherFiles.map(f => f.name.split('.').pop().toUpperCase()));
+                    alert(`Support for ${[...unsupportedTypes].join(', ')} to PDF is coming soon! Only image files will be processed for now.`);
+                }
+
+                if (imageFiles.length === 0) {
+                    fileInput.value = ''; // Clear input if no valid files
+                    return;
+                }
+
+                imageFiles.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const fileData = { name: file.name, url: e.target.result, file: file };
+                        uploadedFiles.push(fileData);
+                        renderPreviews();
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                uploadArea.classList.add('hidden');
+                converterSection.classList.remove('hidden');
+            }
+
+            function renderPreviews() {
+                imagePreviewGrid.innerHTML = '';
+                uploadedFiles.forEach((fileData, index) => {
+                    const thumb = document.createElement('div');
+                    thumb.className = 'img-thumbnail';
+                    thumb.innerHTML = `
+                        <img src="${fileData.url}" alt="${fileData.name}">
+                        <button class="remove-btn" data-index="${index}">&times;</button>
+                    `;
+                    imagePreviewGrid.appendChild(thumb);
+                });
+
+                document.querySelectorAll('.remove-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const indexToRemove = parseInt(e.target.dataset.index);
+                        uploadedFiles.splice(indexToRemove, 1);
+                        renderPreviews();
+                        if (uploadedFiles.length === 0) {
+                            converterSection.classList.add('hidden');
+                            uploadArea.classList.remove('hidden');
+                            fileInput.value = '';
+                        }
+                    });
+                });
+            }
+
+            async function convertToPdf() {
+                if (uploadedFiles.length === 0) {
+                    alert('Please upload at least one image.');
+                    return;
+                }
+
+                convertBtn.disabled = true;
+                convertBtn.textContent = 'Converting...';
+
+                const pageSize = document.getElementById('page-size').value;
+                const orientation = document.getElementById('orientation').value;
+                const margin = parseInt(document.getElementById('margin').value);
+
+                const doc = new jsPDF({ orientation: orientation, unit: 'mm', format: pageSize });
+
+                for (let i = 0; i < uploadedFiles.length; i++) {
+                    if (i > 0) doc.addPage();
+                    
+                    const imgData = uploadedFiles[i].url;
+                    const img = new Image();
+                    img.src = imgData;
+                    
+                    await new Promise(resolve => {
+                        img.onload = () => {
+                            const pageInfo = doc.internal.pageSize;
+                            const pageWidth = pageInfo.getWidth();
+                            const pageHeight = pageInfo.getHeight();
+
+                            const usableWidth = pageWidth - (margin * 2);
+                            const usableHeight = pageHeight - (margin * 2);
+
+                            const imgRatio = img.width / img.height;
+                            const pageRatio = usableWidth / usableHeight;
+
+                            let imgWidth, imgHeight;
+                            if (imgRatio > pageRatio) {
+                                imgWidth = usableWidth;
+                                imgHeight = imgWidth / imgRatio;
+                            } else {
+                                imgHeight = usableHeight;
+                                imgWidth = imgHeight * imgRatio;
+                            }
+                            
+                            const x = margin + (usableWidth - imgWidth) / 2;
+                            const y = margin + (usableHeight - imgHeight) / 2;
+
+                            doc.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight);
+                            resolve();
+                        };
+                    });
+                }
+
+                doc.save('converted-files.pdf');
+                
+                convertBtn.disabled = false;
+                convertBtn.textContent = 'Convert to PDF';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Filter Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        #image-canvas {
+            max-width: 100%;
+            max-height: 65vh;
+            object-fit: contain;
+        }
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .filter-btn {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: #fff;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .filter-btn:hover {
+            background-color: #f8f9ff;
+        }
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .action-buttons {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container">
+                <header class="tool-header">
+                    <h1>Image Filter Tool</h1>
+                    <p class="description">ब्लैक & वाइट, सेपिया, कलर फ़िल्टर लगाएँ।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="filter-wrapper hidden" id="filter-section">
+                        <div id="canvas-container">
+                            <canvas id="image-canvas"></canvas>
+                        </div>
+                        <div class="controls-panel">
+                            <div class="filter-grid">
+                                <button class="filter-btn active" data-filter="none">None</button>
+                                <button class="filter-btn" data-filter="grayscale(100%)">Grayscale</button>
+                                <button class="filter-btn" data-filter="sepia(100%)">Sepia</button>
+                                <button class="filter-btn" data-filter="invert(100%)">Invert</button>
+                                <button class="filter-btn" data-filter="contrast(140%) sepia(30%) brightness(110%)">Vintage</button>
+                                <button class="filter-btn" data-filter="saturate(200%) contrast(120%)">Vibrant</button>
+                                <button class="filter-btn" data-filter="contrast(150%) saturate(150%)">Technicolor</button>
+                                <button class="filter-btn" data-filter="brightness(120%) contrast(90%) saturate(90%)">Lomo</button>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="btn" id="download-btn">Download Image</button>
+                                <button class="btn" id="reset-btn">Choose Another</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Main elements
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const filterSection = document.getElementById('filter-section');
+            const canvas = document.getElementById('image-canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Buttons
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let mainImage = new Image();
+            let originalFile = null;
+
+            // --- Event Listeners ---
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect();
+                }
+            });
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    applyFilter(e.currentTarget.dataset.filter);
+                });
+            });
+
+            downloadBtn.addEventListener('click', downloadImage);
+            resetBtn.addEventListener('click', resetAll);
+
+            // --- Functions ---
+            function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                
+                originalFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    mainImage.onload = () => {
+                        canvas.width = mainImage.width;
+                        canvas.height = mainImage.height;
+                        applyFilter('none'); // Draw initial image
+                        filterButtons.forEach(b => b.classList.remove('active'));
+                        document.querySelector('.filter-btn[data-filter="none"]').classList.add('active');
+                        uploadArea.classList.add('hidden');
+                        filterSection.classList.remove('hidden');
+                    };
+                    mainImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function applyFilter(filterString) {
+                if (!mainImage.src) return;
+                ctx.filter = filterString;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(mainImage, 0, 0);
+            }
+
+            function downloadImage() {
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                const name = originalFile.name.split('.').slice(0, -1).join('.');
+                a.download = `${name}-filtered.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            function resetAll() {
+                fileInput.value = '';
+                mainImage.src = '';
+                originalFile = null;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                filterSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

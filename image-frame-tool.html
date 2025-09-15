@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Frame Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        #canvas-container {
+            overflow: auto;
+            max-height: 80vh;
+            align-items: flex-start;
+            padding: 1rem;
+        }
+        .action-buttons {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container">
+                <header class="tool-header">
+                    <h1>Image Frame Tool</h1>
+                    <p class="description">इमेज पर बॉर्डर और फ्रेम जोड़ें।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="frame-wrapper hidden" id="frame-section">
+                        <div id="canvas-container">
+                            <canvas id="frame-canvas"></canvas>
+                        </div>
+                        <div class="controls-panel">
+                            <div class="control-group">
+                                <label for="frame-width-slider">Frame Width</label>
+                                <div class="slider-group">
+                                    <input type="range" id="frame-width-slider" min="0" max="50" value="10">
+                                    <span id="frame-width-value">10px</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="frame-color-picker">Frame Color</label>
+                                <input type="color" id="frame-color-picker" value="#333333">
+                            </div>
+                            <div class="control-group">
+                                <label for="mat-width-slider">Mat (Inner Border) Width</label>
+                                <div class="slider-group">
+                                    <input type="range" id="mat-width-slider" min="0" max="50" value="20">
+                                    <span id="mat-width-value">20px</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="mat-color-picker">Mat Color</label>
+                                <input type="color" id="mat-color-picker" value="#FFFFFF">
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn" id="download-btn">Download Image</button>
+                                <button class="btn" id="reset-btn">Choose Another</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const frameSection = document.getElementById('frame-section');
+            
+            const canvas = document.getElementById('frame-canvas');
+            const ctx = canvas.getContext('2d');
+
+            const frameWidthSlider = document.getElementById('frame-width-slider');
+            const frameWidthValue = document.getElementById('frame-width-value');
+            const frameColorPicker = document.getElementById('frame-color-picker');
+            const matWidthSlider = document.getElementById('mat-width-slider');
+            const matWidthValue = document.getElementById('mat-width-value');
+            const matColorPicker = document.getElementById('mat-color-picker');
+            
+            const downloadBtn = document.getElementById('download-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let mainImage = new Image();
+            let originalFile = null;
+
+            // Event Listeners
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect();
+                }
+            });
+
+            [frameWidthSlider, frameColorPicker, matWidthSlider, matColorPicker].forEach(el => {
+                el.addEventListener('input', drawFramedImage);
+            });
+            
+            frameWidthSlider.addEventListener('input', (e) => frameWidthValue.textContent = `${e.target.value}px`);
+            matWidthSlider.addEventListener('input', (e) => matWidthValue.textContent = `${e.target.value}px`);
+
+            downloadBtn.addEventListener('click', downloadImage);
+            resetBtn.addEventListener('click', resetAll);
+
+            // Functions
+            function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                
+                originalFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    mainImage.onload = () => {
+                        drawFramedImage();
+                        uploadArea.classList.add('hidden');
+                        frameSection.classList.remove('hidden');
+                    };
+                    mainImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function drawFramedImage() {
+                if (!mainImage.src) return;
+
+                const frameWidth = parseInt(frameWidthSlider.value);
+                const frameColor = frameColorPicker.value;
+                const matWidth = parseInt(matWidthSlider.value);
+                const matColor = matColorPicker.value;
+
+                const totalBorder = frameWidth + matWidth;
+
+                canvas.width = mainImage.width + totalBorder * 2;
+                canvas.height = mainImage.height + totalBorder * 2;
+
+                // 1. Draw outer frame
+                ctx.fillStyle = frameColor;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // 2. Draw inner mat
+                ctx.fillStyle = matColor;
+                ctx.fillRect(frameWidth, frameWidth, canvas.width - frameWidth * 2, canvas.height - frameWidth * 2);
+
+                // 3. Draw the image on top
+                ctx.drawImage(mainImage, totalBorder, totalBorder);
+            }
+
+            function downloadImage() {
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                const name = originalFile.name.split('.').slice(0, -1).join('.');
+                a.download = `${name}-framed.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            function resetAll() {
+                originalFile = null;
+                mainImage.src = '';
+                fileInput.value = '';
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                frameSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

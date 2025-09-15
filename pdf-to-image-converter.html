@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Image Converter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.102/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+            background-color: #f8f9ff;
+            border-radius: 8px;
+            min-height: 140px;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        .page-thumbnail {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.5rem;
+            text-align: center;
+            background-color: #fff;
+        }
+        .page-thumbnail canvas {
+            width: 100%;
+            border-radius: 4px;
+        }
+        .page-thumbnail p {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        .action-buttons {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+            margin-left: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html">Image Tools</a></li>
+                <li><a href="pdf-tools.html" class="active">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container">
+                <header class="tool-header">
+                    <h1>PDF to Image Converter</h1>
+                    <p class="description">PDF पेज को इमेज में बदलें।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your PDF here or click to browse</p>
+                        <input type="file" id="file-input" accept="application/pdf">
+                    </div>
+                    
+                    <div class="converter-wrapper hidden" id="converter-section">
+                        <div class="preview-grid" id="preview-grid">
+                            <!-- PDF page thumbnails will be generated here -->
+                        </div>
+                        
+                        <div class="options-grid">
+                            <div class="control-group">
+                                <label for="format-select">Image Format</label>
+                                <select id="format-select">
+                                    <option value="png" selected>PNG</option>
+                                    <option value="jpeg">JPEG</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="dpi-input">Resolution (DPI)</label>
+                                <input type="number" id="dpi-input" value="150" min="72" max="600">
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn" id="download-zip-btn">Download All as ZIP</button>
+                            <button class="btn" id="reset-btn">Choose Another PDF</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const { pdfjsLib } = window;
+            pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.102/pdf.worker.min.js`;
+
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const converterSection = document.getElementById('converter-section');
+            const previewGrid = document.getElementById('preview-grid');
+            const downloadBtn = document.getElementById('download-zip-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let pdfDoc = null;
+            let originalFileName = '';
+
+            // --- Event Listeners ---
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect();
+            });
+
+            downloadBtn.addEventListener('click', downloadAllAsZip);
+            resetBtn.addEventListener('click', resetAll);
+
+            // --- Functions ---
+            async function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (!file || file.type !== 'application/pdf') return;
+
+                originalFileName = file.name.replace(/\.pdf$/i, '');
+                uploadArea.innerHTML = '<p>Loading PDF...</p>';
+
+                const fileReader = new FileReader();
+                fileReader.onload = async function() {
+                    const typedarray = new Uint8Array(this.result);
+                    try {
+                        pdfDoc = await pdfjsLib.getDocument({ data: typedarray }).promise;
+                        renderThumbnails();
+                        uploadArea.classList.add('hidden');
+                        converterSection.classList.remove('hidden');
+                    } catch (error) {
+                        alert('Error loading PDF: ' + error.message);
+                        resetAll();
+                    }
+                };
+                fileReader.readAsArrayBuffer(file);
+            }
+
+            async function renderThumbnails() {
+                previewGrid.innerHTML = '';
+                for (let i = 1; i <= pdfDoc.numPages; i++) {
+                    const page = await pdfDoc.getPage(i);
+                    const viewport = page.getViewport({ scale: 0.5 });
+                    
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+                    const thumbDiv = document.createElement('div');
+                    thumbDiv.className = 'page-thumbnail';
+                    thumbDiv.appendChild(canvas);
+                    const p = document.createElement('p');
+                    p.textContent = `Page ${i}`;
+                    thumbDiv.appendChild(p);
+                    previewGrid.appendChild(thumbDiv);
+                }
+            }
+
+            async function downloadAllAsZip() {
+                if (!pdfDoc) return;
+
+                downloadBtn.disabled = true;
+                downloadBtn.textContent = 'Zipping...';
+
+                const zip = new JSZip();
+                const format = document.getElementById('format-select').value;
+                const dpi = parseInt(document.getElementById('dpi-input').value) || 150;
+                const scale = dpi / 96; // 96 is standard screen DPI
+
+                for (let i = 1; i <= pdfDoc.numPages; i++) {
+                    const page = await pdfDoc.getPage(i);
+                    const viewport = page.getViewport({ scale: scale });
+
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, `image/${format}`, 0.95));
+                    zip.file(`page_${i}.${format}`, blob);
+                }
+
+                const content = await zip.generateAsync({ type: 'blob' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(content);
+                a.download = `${originalFileName}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = 'Download All as ZIP';
+            }
+
+            function resetAll() {
+                pdfDoc = null;
+                originalFileName = '';
+                fileInput.value = '';
+                previewGrid.innerHTML = '';
+                converterSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+                uploadArea.innerHTML = '<i>📁</i><p>Drag & drop your PDF here or click to browse</p>';
+            }
+        });
+    </script>
+</body>
+</html>

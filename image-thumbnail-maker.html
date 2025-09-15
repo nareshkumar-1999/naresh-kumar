@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <title>Image Thumbnail Maker - HEMAN BAGHEL Tools</title>
+    <meta name="description" content="Create custom thumbnails for YouTube, blogs, and social media. Crop your image to the perfect aspect ratio and add text easily with Heman Baghel's free online tool.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .maker-wrapper {
+            display: flex;
+            gap: 30px;
+        }
+
+        .cropper-container {
+            flex: 2;
+            max-height: 70vh;
+        }
+        .cropper-container img {
+            display: block;
+            max-width: 100%;
+        }
+
+        .controls-panel {
+            flex: 1;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+        .aspect-btn {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: #fff;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .aspect-btn:hover { background-color: #f8f9ff; }
+        .aspect-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .action-buttons {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+
+        @media (max-width: 900px) {
+            .maker-wrapper { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container">
+                <header class="tool-header">
+                    <h1>Image Thumbnail Maker</h1>
+                    <p class="description">यूट्यूब/ब्लॉग के लिए थंबनेल बनाएँ।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="maker-wrapper hidden" id="maker-section">
+                        <div class="cropper-container">
+                            <img id="image-to-crop">
+                        </div>
+                        <div class="controls-panel">
+                            <div class="control-group">
+                                <label>Aspect Ratio</label>
+                                <div class="btn-group">
+                                    <button class="aspect-btn active" data-ratio="1.777777">16:9</button>
+                                    <button class="aspect-btn" data-ratio="1">1:1</button>
+                                    <button class="aspect-btn" data-ratio="1.333333">4:3</button>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="title-input">Title Text</label>
+                                <input type="text" id="title-input" placeholder="Your Awesome Title">
+                            </div>
+                            <div class="control-group">
+                                <label for="font-size-slider">Font Size</label>
+                                <div class="slider-group">
+                                    <input type="range" id="font-size-slider" min="20" max="150" value="80">
+                                    <span id="font-size-value">80px</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="font-color-picker">Font Color</label>
+                                <input type="color" id="font-color-picker" value="#FFFFFF">
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn" id="download-btn">Download Thumbnail</button>
+                                <button class="btn" id="reset-btn">Start Over</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const uploadArea = document.getElementById('upload-area');
+            const makerSection = document.getElementById('maker-section');
+            const fileInput = document.getElementById('file-input');
+            const imageToCrop = document.getElementById('image-to-crop');
+
+            const aspectBtns = document.querySelectorAll('.aspect-btn');
+            const titleInput = document.getElementById('title-input');
+            const fontSizeSlider = document.getElementById('font-size-slider');
+            const fontSizeValue = document.getElementById('font-size-value');
+            const fontColorPicker = document.getElementById('font-color-picker');
+
+            const downloadBtn = document.getElementById('download-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let cropper = null;
+            let originalFileName = '';
+
+            // Event Listeners
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect();
+                }
+            });
+
+            aspectBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (cropper) {
+                        aspectBtns.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        cropper.setAspectRatio(parseFloat(btn.dataset.ratio));
+                    }
+                });
+            });
+
+            fontSizeSlider.addEventListener('input', e => fontSizeValue.textContent = `${e.target.value}px`);
+
+            downloadBtn.addEventListener('click', downloadThumbnail);
+            resetBtn.addEventListener('click', resetAll);
+
+            // Functions
+            function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+
+                originalFileName = file.name.split('.').slice(0, -1).join('.');
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imageToCrop.src = e.target.result;
+                    uploadArea.classList.add('hidden');
+                    makerSection.classList.remove('hidden');
+
+                    if (cropper) cropper.destroy();
+                    
+                    cropper = new Cropper(imageToCrop, {
+                        aspectRatio: 16 / 9,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        background: false,
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function downloadThumbnail() {
+                if (!cropper) return;
+
+                const croppedCanvas = cropper.getCroppedCanvas();
+                
+                const finalCanvas = document.createElement('canvas');
+                finalCanvas.width = 1280;
+                finalCanvas.height = 720;
+                const finalCtx = finalCanvas.getContext('2d');
+
+                // Draw cropped image onto final canvas
+                finalCtx.drawImage(croppedCanvas, 0, 0, 1280, 720);
+
+                // Draw text
+                const title = titleInput.value;
+                if (title) {
+                    const fontSize = fontSizeSlider.value;
+                    finalCtx.font = `bold ${fontSize}px 'Arial', sans-serif`;
+                    finalCtx.fillStyle = fontColorPicker.value;
+                    finalCtx.textAlign = 'center';
+                    finalCtx.textBaseline = 'middle';
+
+                    // Add a simple stroke for better visibility
+                    finalCtx.strokeStyle = 'black';
+                    finalCtx.lineWidth = fontSize / 20;
+
+                    const x = finalCanvas.width / 2;
+                    const y = finalCanvas.height / 2;
+
+                    finalCtx.strokeText(title, x, y);
+                    finalCtx.fillText(title, x, y);
+                }
+
+                // Trigger download
+                const a = document.createElement('a');
+                a.href = finalCanvas.toDataURL('image/jpeg', 0.9);
+                a.download = `${originalFileName}-thumbnail.jpg`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            function resetAll() {
+                if (cropper) cropper.destroy();
+                cropper = null;
+                fileInput.value = '';
+                imageToCrop.src = '';
+                makerSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            }
+        });
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }).catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

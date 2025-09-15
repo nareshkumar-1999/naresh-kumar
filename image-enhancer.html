@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Enhancer</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        #image-canvas {
+            max-width: 100%;
+            max-height: 65vh;
+            object-fit: contain;
+        }
+        .action-buttons {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        #reset-filters-btn {
+            background: linear-gradient(90deg, #6c757d 0%, #adb5bd 100%);
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container">
+                <header class="tool-header">
+                    <h1>Image Enhancer</h1>
+                    <p class="description">इमेज की ब्राइटनेस, शार्पनेस सुधारें।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="enhancer-wrapper hidden" id="enhancer-section">
+                        <div id="canvas-container">
+                            <canvas id="image-canvas"></canvas>
+                        </div>
+                        <div class="controls-panel">
+                            <div class="control-group">
+                                <label for="brightness-slider">Brightness</label>
+                                <div class="slider-group">
+                                    <input type="range" id="brightness-slider" min="0" max="200" value="100">
+                                    <span id="brightness-value">100%</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="contrast-slider">Contrast</label>
+                                <div class="slider-group">
+                                    <input type="range" id="contrast-slider" min="0" max="200" value="100">
+                                    <span id="contrast-value">100%</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="saturate-slider">Saturation</label>
+                                <div class="slider-group">
+                                    <input type="range" id="saturate-slider" min="0" max="200" value="100">
+                                    <span id="saturate-value">100%</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="blur-slider">Blur</label>
+                                <div class="slider-group">
+                                    <input type="range" id="blur-slider" min="0" max="10" value="0" step="0.1">
+                                    <span id="blur-value">0px</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="sepia-slider">Sepia</label>
+                                <div class="slider-group">
+                                    <input type="range" id="sepia-slider" min="0" max="100" value="0">
+                                    <span id="sepia-value">0%</span>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="btn" id="download-btn">Download Image</button>
+                                <button class="btn" id="reset-filters-btn">Reset Filters</button>
+                                <button class="btn" id="reset-btn">Choose Another</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Main elements
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const enhancerSection = document.getElementById('enhancer-section');
+            const canvas = document.getElementById('image-canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Sliders and values
+            const sliders = {
+                brightness: document.getElementById('brightness-slider'),
+                contrast: document.getElementById('contrast-slider'),
+                saturate: document.getElementById('saturate-slider'),
+                blur: document.getElementById('blur-slider'),
+                sepia: document.getElementById('sepia-slider'),
+            };
+            const values = {
+                brightness: document.getElementById('brightness-value'),
+                contrast: document.getElementById('contrast-value'),
+                saturate: document.getElementById('saturate-value'),
+                blur: document.getElementById('blur-value'),
+                sepia: document.getElementById('sepia-value'),
+            };
+
+            // Buttons
+            const downloadBtn = document.getElementById('download-btn');
+            const resetFiltersBtn = document.getElementById('reset-filters-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let mainImage = new Image();
+            let originalFile = null;
+
+            // --- Event Listeners ---
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect();
+                }
+            });
+
+            Object.values(sliders).forEach(slider => slider.addEventListener('input', applyFilters));
+            downloadBtn.addEventListener('click', downloadImage);
+            resetFiltersBtn.addEventListener('click', resetFilters);
+            resetBtn.addEventListener('click', resetAll);
+
+            // --- Functions ---
+            function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                
+                originalFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    mainImage.onload = () => {
+                        canvas.width = mainImage.width;
+                        canvas.height = mainImage.height;
+                        resetFilters(); // Also applies filters
+                        uploadArea.classList.add('hidden');
+                        enhancerSection.classList.remove('hidden');
+                    };
+                    mainImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function applyFilters() {
+                if (!mainImage.src) return;
+
+                const filterValues = {
+                    brightness: sliders.brightness.value,
+                    contrast: sliders.contrast.value,
+                    saturate: sliders.saturate.value,
+                    blur: sliders.blur.value,
+                    sepia: sliders.sepia.value,
+                };
+
+                values.brightness.textContent = `${filterValues.brightness}%`;
+                values.contrast.textContent = `${filterValues.contrast}%`;
+                values.saturate.textContent = `${filterValues.saturate}%`;
+                values.blur.textContent = `${filterValues.blur}px`;
+                values.sepia.textContent = `${filterValues.sepia}%`;
+
+                const filterString = `brightness(${filterValues.brightness}%) contrast(${filterValues.contrast}%) saturate(${filterValues.saturate}%) blur(${filterValues.blur}px) sepia(${filterValues.sepia}%)`;
+                
+                ctx.filter = filterString;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(mainImage, 0, 0);
+            }
+
+            function resetFilters() {
+                sliders.brightness.value = 100;
+                sliders.contrast.value = 100;
+                sliders.saturate.value = 100;
+                sliders.blur.value = 0;
+                sliders.sepia.value = 0;
+                applyFilters();
+            }
+
+            function downloadImage() {
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                const name = originalFile.name.split('.').slice(0, -1).join('.');
+                a.download = `${name}-enhanced.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            function resetAll() {
+                fileInput.value = '';
+                mainImage.src = '';
+                originalFile = null;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                enhancerSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

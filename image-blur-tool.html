@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Blur Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        #main-canvas {
+            max-width: 100%;
+            max-height: 65vh;
+            object-fit: contain;
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container">
+                <header class="tool-header">
+                    <h1>Image Blur Tool</h1>
+                    <p class="description">इमेज का हिस्सा ब्लर करें।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="blur-wrapper hidden" id="blur-section">
+                        <div id="canvas-container">
+                            <canvas id="main-canvas"></canvas>
+                            <canvas id="blur-canvas" class="hidden"></canvas>
+                        </div>
+                        <div class="controls-panel">
+                            <div class="control-group">
+                                <label for="blur-amount-slider">Blur Amount</label>
+                                <div class="slider-group">
+                                    <input type="range" id="blur-amount-slider" min="0" max="20" value="5">
+                                    <span id="blur-amount-value">5px</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="brush-size-slider">Brush Size</label>
+                                <div class="slider-group">
+                                    <input type="range" id="brush-size-slider" min="5" max="100" value="30">
+                                    <span id="brush-size-value">30px</span>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="btn" id="download-btn">Download Image</button>
+                                <button class="btn" id="reset-btn">Choose Another</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Main elements
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const blurSection = document.getElementById('blur-section');
+            
+            const mainCanvas = document.getElementById('main-canvas');
+            const mainCtx = mainCanvas.getContext('2d');
+            const blurCanvas = document.getElementById('blur-canvas');
+            const blurCtx = blurCanvas.getContext('2d');
+
+            // Controls
+            const blurAmountSlider = document.getElementById('blur-amount-slider');
+            const blurAmountValue = document.getElementById('blur-amount-value');
+            const brushSizeSlider = document.getElementById('brush-size-slider');
+            const brushSizeValue = document.getElementById('brush-size-value');
+            const downloadBtn = document.getElementById('download-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let mainImage = new Image();
+            let originalFile = null;
+            let isDrawing = false;
+
+            // --- Event Listeners ---
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect();
+                }
+            });
+
+            blurAmountSlider.addEventListener('input', () => {
+                blurAmountValue.textContent = `${blurAmountSlider.value}px`;
+                prepareBlurCanvas();
+            });
+            brushSizeSlider.addEventListener('input', () => brushSizeValue.textContent = `${brushSizeSlider.value}px`);
+
+            mainCanvas.addEventListener('mousedown', () => isDrawing = true);
+            mainCanvas.addEventListener('mouseup', () => isDrawing = false);
+            mainCanvas.addEventListener('mouseout', () => isDrawing = false);
+            mainCanvas.addEventListener('mousemove', drawBlur);
+
+            downloadBtn.addEventListener('click', downloadImage);
+            resetBtn.addEventListener('click', resetAll);
+
+            // --- Functions ---
+            function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                
+                originalFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    mainImage.onload = () => {
+                        mainCanvas.width = mainImage.width;
+                        mainCanvas.height = mainImage.height;
+                        blurCanvas.width = mainImage.width;
+                        blurCanvas.height = mainImage.height;
+
+                        mainCtx.drawImage(mainImage, 0, 0);
+                        prepareBlurCanvas();
+
+                        uploadArea.classList.add('hidden');
+                        blurSection.classList.remove('hidden');
+                    };
+                    mainImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function prepareBlurCanvas() {
+                if (!mainImage.src) return;
+                const blurValue = blurAmountSlider.value;
+                blurCtx.filter = `blur(${blurValue}px)`;
+                blurCtx.drawImage(mainImage, 0, 0);
+            }
+
+            function getMousePos(canvas, evt) {
+                const rect = canvas.getBoundingClientRect();
+                return {
+                    x: evt.clientX - rect.left,
+                    y: evt.clientY - rect.top
+                };
+            }
+
+            function drawBlur(e) {
+                if (!isDrawing || !mainImage.src) return;
+
+                const pos = getMousePos(mainCanvas, e);
+                const brushSize = parseInt(brushSizeSlider.value);
+
+                mainCtx.save();
+                mainCtx.beginPath();
+                mainCtx.arc(pos.x, pos.y, brushSize / 2, 0, Math.PI * 2);
+                mainCtx.clip();
+                mainCtx.drawImage(blurCanvas, 0, 0);
+                mainCtx.restore();
+            }
+
+            function downloadImage() {
+                const a = document.createElement('a');
+                a.href = mainCanvas.toDataURL('image/png');
+                const name = originalFile.name.split('.').slice(0, -1).join('.');
+                a.download = `${name}-blurred.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            function resetAll() {
+                fileInput.value = '';
+                mainImage.src = '';
+                originalFile = null;
+                mainCtx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+                blurCtx.clearRect(0, 0, blurCanvas.width, blurCanvas.height);
+                blurSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+                isDrawing = false;
+            }
+        });
+    </script>
+</body>
+</html>

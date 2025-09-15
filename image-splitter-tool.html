@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Splitter Tool</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        #preview-container {
+            padding: 1rem;
+            display: grid;
+            gap: 5px;
+            overflow: auto;
+            max-height: 70vh;
+        }
+        #preview-container img {
+            max-width: 100%;
+            border: 1px solid #ccc;
+        }
+        .action-buttons {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container">
+                <header class="tool-header">
+                    <h1>Image Splitter Tool</h1>
+                    <p class="description">एक इमेज को कई हिस्सों में काटें।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="splitter-wrapper hidden" id="splitter-section">
+                        <div id="preview-container">
+                            <!-- Split images will be shown here -->
+                        </div>
+                        <div class="controls-panel">
+                            <div class="control-group">
+                                <label for="rows-input">Rows</label>
+                                <input type="number" id="rows-input" value="2" min="1">
+                            </div>
+                            <div class="control-group">
+                                <label for="cols-input">Columns</label>
+                                <input type="number" id="cols-input" value="2" min="1">
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn" id="download-btn">Download as ZIP</button>
+                                <button class="btn" id="reset-btn">Choose Another</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const splitterSection = document.getElementById('splitter-section');
+            
+            const previewContainer = document.getElementById('preview-container');
+            const rowsInput = document.getElementById('rows-input');
+            const colsInput = document.getElementById('cols-input');
+            
+            const downloadBtn = document.getElementById('download-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let mainImage = new Image();
+            let originalFile = null;
+
+            // Event Listeners
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect();
+                }
+            });
+
+            [rowsInput, colsInput].forEach(el => {
+                el.addEventListener('input', splitImage);
+            });
+
+            downloadBtn.addEventListener('click', downloadAsZip);
+            resetBtn.addEventListener('click', resetAll);
+
+            // Functions
+            function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                
+                originalFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    mainImage.onload = () => {
+                        splitImage();
+                        uploadArea.classList.add('hidden');
+                        splitterSection.classList.remove('hidden');
+                    };
+                    mainImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function splitImage() {
+                if (!mainImage.src) return;
+
+                const rows = parseInt(rowsInput.value) || 1;
+                const cols = parseInt(colsInput.value) || 1;
+
+                previewContainer.innerHTML = '';
+                previewContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+                const pieceWidth = mainImage.width / cols;
+                const pieceHeight = mainImage.height / rows;
+
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = pieceWidth;
+                        canvas.height = pieceHeight;
+                        const ctx = canvas.getContext('2d');
+
+                        ctx.drawImage(
+                            mainImage,
+                            c * pieceWidth, r * pieceHeight, // Source x, y
+                            pieceWidth, pieceHeight,         // Source width, height
+                            0, 0,                             // Destination x, y
+                            pieceWidth, pieceHeight          // Destination width, height
+                        );
+
+                        const imgElement = new Image();
+                        imgElement.src = canvas.toDataURL();
+                        previewContainer.appendChild(imgElement);
+                    }
+                }
+            }
+
+            async function downloadAsZip() {
+                downloadBtn.disabled = true;
+                downloadBtn.textContent = 'Zipping...';
+
+                const zip = new JSZip();
+                const imageElements = previewContainer.querySelectorAll('img');
+                
+                imageElements.forEach((img, index) => {
+                    const base64Data = img.src.split(',')[1];
+                    zip.file(`split_${index + 1}.png`, base64Data, { base64: true });
+                });
+
+                const content = await zip.generateAsync({ type: 'blob' });
+                
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(content);
+                const name = originalFile.name.split('.').slice(0, -1).join('.');
+                a.download = `${name}-split.zip`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = 'Download as ZIP';
+            }
+
+            function resetAll() {
+                originalFile = null;
+                mainImage.src = '';
+                fileInput.value = '';
+                previewContainer.innerHTML = '';
+                splitterSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

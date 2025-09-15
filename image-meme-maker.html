@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Meme Maker</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        #meme-canvas {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+        .action-buttons {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container">
+                <header class="tool-header">
+                    <h1>Image Meme Maker</h1>
+                    <p class="description">इमेज पर टेक्स्ट जोड़कर मीम बनाएँ।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="meme-wrapper hidden" id="meme-section">
+                        <div id="canvas-container">
+                            <canvas id="meme-canvas"></canvas>
+                        </div>
+                        <div class="controls-panel">
+                            <div class="control-group">
+                                <label for="top-text-input">Top Text</label>
+                                <input type="text" id="top-text-input" placeholder="Top Text">
+                            </div>
+                            <div class="control-group">
+                                <label for="bottom-text-input">Bottom Text</label>
+                                <input type="text" id="bottom-text-input" placeholder="Bottom Text">
+                            </div>
+                            <div class="control-group">
+                                <label for="font-size-slider">Font Size</label>
+                                <div class="slider-group">
+                                    <input type="range" id="font-size-slider" min="10" max="100" value="40">
+                                    <span id="font-size-value">40px</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="font-color-picker">Font Color</label>
+                                <input type="color" id="font-color-picker" value="#FFFFFF">
+                            </div>
+                            <div class="control-group">
+                                <label for="font-family-select">Font Family</label>
+                                <select id="font-family-select">
+                                    <option value="Impact">Impact</option>
+                                    <option value="Arial">Arial</option>
+                                    <option value="Comic Sans MS">Comic Sans MS</option>
+                                    <option value="Verdana">Verdana</option>
+                                </select>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn" id="download-btn">Download Meme</button>
+                                <button class="btn" id="reset-btn">Choose Another</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const memeSection = document.getElementById('meme-section');
+            
+            const canvas = document.getElementById('meme-canvas');
+            const ctx = canvas.getContext('2d');
+
+            const topTextInput = document.getElementById('top-text-input');
+            const bottomTextInput = document.getElementById('bottom-text-input');
+            const fontSizeSlider = document.getElementById('font-size-slider');
+            const fontSizeValue = document.getElementById('font-size-value');
+            const fontColorPicker = document.getElementById('font-color-picker');
+            const fontFamilySelect = document.getElementById('font-family-select');
+            
+            const downloadBtn = document.getElementById('download-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let mainImage = new Image();
+            let originalFile = null;
+
+            // Event Listeners
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect();
+                }
+            });
+
+            [topTextInput, bottomTextInput, fontSizeSlider, fontColorPicker, fontFamilySelect].forEach(el => {
+                el.addEventListener('input', drawMeme);
+            });
+            
+            fontSizeSlider.addEventListener('input', (e) => fontSizeValue.textContent = `${e.target.value}px`);
+
+            downloadBtn.addEventListener('click', downloadMeme);
+            resetBtn.addEventListener('click', resetAll);
+
+            // Functions
+            function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                
+                originalFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    mainImage.onload = () => {
+                        canvas.width = mainImage.width;
+                        canvas.height = mainImage.height;
+                        drawMeme();
+                        uploadArea.classList.add('hidden');
+                        memeSection.classList.remove('hidden');
+                    };
+                    mainImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function drawMeme() {
+                if (!mainImage.src) return;
+
+                // Draw image
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(mainImage, 0, 0);
+
+                // Text properties
+                const fontSize = fontSizeSlider.value;
+                const fontFamily = fontFamilySelect.value;
+                ctx.font = `bold ${fontSize}px ${fontFamily}`;
+                ctx.fillStyle = fontColorPicker.value;
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = fontSize / 20;
+                ctx.textAlign = 'center';
+
+                // Draw top text
+                ctx.textBaseline = 'top';
+                const topText = topTextInput.value.toUpperCase();
+                const x = canvas.width / 2;
+                let y = 10;
+                ctx.strokeText(topText, x, y);
+                ctx.fillText(topText, x, y);
+
+                // Draw bottom text
+                ctx.textBaseline = 'bottom';
+                const bottomText = bottomTextInput.value.toUpperCase();
+                y = canvas.height - 10;
+                ctx.strokeText(bottomText, x, y);
+                ctx.fillText(bottomText, x, y);
+            }
+
+            function downloadMeme() {
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                const name = originalFile.name.split('.').slice(0, -1).join('.');
+                a.download = `${name}-meme.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            function resetAll() {
+                originalFile = null;
+                mainImage.src = '';
+                fileInput.value = '';
+                topTextInput.value = '';
+                bottomTextInput.value = '';
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                memeSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Drawing Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        #image-canvas, #drawing-canvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+        #drawing-canvas {
+            cursor: crosshair;
+        }
+        .action-buttons {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+        #eraser-btn {
+            background: linear-gradient(90deg, #6c757d 0%, #adb5bd 100%);
+        }
+        #eraser-btn.active {
+            box-shadow: 0 0 0 3px var(--primary-gradient-end);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container">
+                <header class="tool-header">
+                    <h1>Image Drawing Tool</h1>
+                    <p class="description">इमेज पर पेंटिंग/ड्रॉइंग करें।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="drawing-wrapper hidden" id="drawing-section">
+                        <div id="canvas-container">
+                            <canvas id="image-canvas"></canvas>
+                            <canvas id="drawing-canvas"></canvas>
+                        </div>
+                        <div class="controls-panel" style="width: 250px;">
+                            <div class="control-group">
+                                <label for="color-picker">Brush Color</label>
+                                <input type="color" id="color-picker" value="#ff0000">
+                            </div>
+                            <div class="control-group">
+                                <label for="brush-size-slider">Brush Size</label>
+                                <div class="slider-group">
+                                    <input type="range" id="brush-size-slider" min="1" max="50" value="5">
+                                    <span id="brush-size-value">5px</span>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn" id="eraser-btn">Eraser</button>
+                                <button class="btn" id="download-btn">Download Image</button>
+                                <button class="btn" id="reset-btn">Choose Another</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const drawingSection = document.getElementById('drawing-section');
+            
+            const imageCanvas = document.getElementById('image-canvas');
+            const imageCtx = imageCanvas.getContext('2d');
+            const drawingCanvas = document.getElementById('drawing-canvas');
+            const drawingCtx = drawingCanvas.getContext('2d');
+
+            const colorPicker = document.getElementById('color-picker');
+            const brushSizeSlider = document.getElementById('brush-size-slider');
+            const brushSizeValue = document.getElementById('brush-size-value');
+            const eraserBtn = document.getElementById('eraser-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let mainImage = new Image();
+            let originalFile = null;
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+            let isErasing = false;
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadArea.addEventListener('dragover', (e) => e.preventDefault());
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect();
+                }
+            });
+
+            function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                
+                originalFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    mainImage.onload = () => {
+                        const container = document.getElementById('canvas-container');
+                        const containerRatio = container.clientWidth / container.clientHeight;
+                        const imageRatio = mainImage.width / mainImage.height;
+                        
+                        let canvasWidth, canvasHeight;
+                        if (imageRatio > containerRatio) {
+                            canvasWidth = container.clientWidth;
+                            canvasHeight = canvasWidth / imageRatio;
+                        } else {
+                            canvasHeight = container.clientHeight;
+                            canvasWidth = canvasHeight * imageRatio;
+                        }
+
+                        [imageCanvas, drawingCanvas].forEach(c => {
+                            c.width = canvasWidth;
+                            c.height = canvasHeight;
+                        });
+                        
+                        imageCtx.drawImage(mainImage, 0, 0, canvasWidth, canvasHeight);
+                        
+                        uploadArea.classList.add('hidden');
+                        drawingSection.classList.remove('hidden');
+                    };
+                    mainImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function getMousePos(canvas, evt) {
+                const rect = canvas.getBoundingClientRect();
+                return {
+                    x: evt.clientX - rect.left,
+                    y: evt.clientY - rect.top
+                };
+            }
+
+            function draw(e) {
+                if (!isDrawing) return;
+                const pos = getMousePos(drawingCanvas, e);
+                
+                drawingCtx.globalCompositeOperation = isErasing ? 'destination-out' : 'source-over';
+                drawingCtx.strokeStyle = colorPicker.value;
+                drawingCtx.lineWidth = brushSizeSlider.value;
+                drawingCtx.lineCap = 'round';
+                drawingCtx.lineJoin = 'round';
+
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(lastX, lastY);
+                drawingCtx.lineTo(pos.x, pos.y);
+                drawingCtx.stroke();
+                
+                [lastX, lastY] = [pos.x, pos.y];
+            }
+
+            drawingCanvas.addEventListener('mousedown', (e) => {
+                isDrawing = true;
+                const pos = getMousePos(drawingCanvas, e);
+                [lastX, lastY] = [pos.x, pos.y];
+            });
+            drawingCanvas.addEventListener('mousemove', draw);
+            drawingCanvas.addEventListener('mouseup', () => isDrawing = false);
+            drawingCanvas.addEventListener('mouseout', () => isDrawing = false);
+
+            brushSizeSlider.addEventListener('input', (e) => brushSizeValue.textContent = `${e.target.value}px`);
+
+            eraserBtn.addEventListener('click', () => {
+                isErasing = !isErasing;
+                eraserBtn.classList.toggle('active', isErasing);
+                eraserBtn.textContent = isErasing ? 'Brush' : 'Eraser';
+            });
+
+            downloadBtn.addEventListener('click', () => {
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = imageCanvas.width;
+                tempCanvas.height = imageCanvas.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                
+                tempCtx.drawImage(imageCanvas, 0, 0);
+                tempCtx.drawImage(drawingCanvas, 0, 0);
+
+                const a = document.createElement('a');
+                a.href = tempCanvas.toDataURL('image/png');
+                const name = originalFile.name.split('.').slice(0, -1).join('.');
+                a.download = `${name}-drawn.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+
+            resetBtn.addEventListener('click', () => {
+                originalFile = null;
+                mainImage.src = '';
+                fileInput.value = '';
+                imageCtx.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
+                drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+                drawingSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

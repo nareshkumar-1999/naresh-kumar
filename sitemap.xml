@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+<url>
+  <loc>https://<your-github-username>.github.io/index.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-tools.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-resizer.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/background-remover.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-cropper.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-compressor.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-converter.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-rotator.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-flipper.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-color-picker.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-watermark-tool.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-enhancer.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-filter-tool.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-blur-tool.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-sharpen-tool.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-drawing-tool.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-meme-maker.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-sticker-maker.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-collage-maker.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-frame-tool.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/pan-card-resizer.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-to-pdf-converter.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-splitter-tool.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-background-changer.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/pdf-to-image-converter.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-background-blur.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-merge-tool.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://<your-github-username>.github.io/image-thumbnail-maker.html</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+
+</urlset>

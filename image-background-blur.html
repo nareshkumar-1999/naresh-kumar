@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Background Blur</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-segmentation"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Page-specific styles */
+        #result-canvas {
+            max-width: 100%;
+            max-height: 70vh;
+        }
+        #reset-btn {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">HEMAN BAGHEL</a>
+            <button class="btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+            <button class="btn nav-share-btn" id="nav-share-btn">🔗 Share Site</button>
+        </div>
+    </header>
+
+    <div class="site-container">
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="image-tools.html" class="active">Image Tools</a></li>
+                <li><a href="pdf-tools.html">PDF Tools</a></li>
+                <li><a href="#">Video Tools</a></li>
+                <li><a href="#">Audio Tools</a></li>
+                <li><a href="#">Text Tools</a></li>
+                <li><a href="#">Resume & Job Tools</a></li>
+                <li><a href="#">Developer Tools</a></li>
+                <li><a href="#">SEO Tools</a></li>
+                <li><a href="#">Mobile Tools</a></li>
+                <li><a href="#">Business Tools</a></li>
+                <li><a href="#">E-commerce Tools</a></li>
+                <li><a href="#">Communication Tools</a></li>
+                <li><a href="#">Math & Calculation Tools</a></li>
+                <li><a href="#">Data Tools</a></li>
+                <li><a href="#">Education Tools</a></li>
+                <li><a href="#">Language Tools</a></li>
+                <li><a href="#">Productivity Tools</a></li>
+                <li><a href="#">health & Fitness Tools</a></li>
+                <li><a href="#">Finance Tools</a></li>
+                <li><a href="#">UI/UX Tools</a></li>
+                <li><a href="#">Design Tools</a></li>
+                <li><a href="#">Utility Tools</a></li>
+                <li><a href="#">Weather Tools</a></li>
+                <li><a href="#">Crypto Tools</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-page-content">
+            <div class="tool-container">
+                <header class="tool-header">
+                    <h1>Image Background Blur</h1>
+                    <p class="description">AI की मदद से फोटो का बैकग्राउंड ब्लर करें।</p>
+                </header>
+                
+                <div class="main-content">
+                    <div class="upload-container" id="upload-area">
+                        <i>📁</i>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*">
+                    </div>
+                    
+                    <div class="blur-wrapper hidden" id="blur-section">
+                        <div id="canvas-container">
+                            <canvas id="result-canvas"></canvas>
+                        </div>
+                        <div class="controls-panel">
+                            <div class="control-group">
+                                <label for="blur-slider">Blur Amount</label>
+                                <div class="slider-group">
+                                    <input type="range" id="blur-slider" min="0" max="20" value="8">
+                                    <span id="blur-value">8px</span>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn" id="download-btn">Download Image</button>
+                                <button class="btn" id="reset-btn">Choose Another</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2024 HEMAN BAGHEL. All Rights Reserved.</p></footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const uploadArea = document.getElementById('upload-area');
+            const blurSection = document.getElementById('blur-section');
+            const fileInput = document.getElementById('file-input');
+            const blurSlider = document.getElementById('blur-slider');
+            const blurValue = document.getElementById('blur-value');
+            const canvas = document.getElementById('result-canvas');
+            const downloadBtn = document.getElementById('download-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            let mainImage = new Image();
+            let originalFile = null;
+            let segmenter;
+
+            // Load the model
+            uploadArea.querySelector('p').textContent = 'Loading AI Model... Please wait.';
+            const model = bodySegmentation.SupportedModels.MediaPipeSelfieSegmentation;
+            segmenter = await bodySegmentation.createSegmenter(model, {
+                runtime: 'mediapipe',
+                solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation',
+            });
+            uploadArea.querySelector('p').textContent = 'Drag & drop your image here or click to browse';
+
+            // Event Listeners
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            blurSlider.addEventListener('input', () => {
+                blurValue.textContent = `${blurSlider.value}px`;
+                applyBlur();
+            });
+            downloadBtn.addEventListener('click', downloadImage);
+            resetBtn.addEventListener('click', resetAll);
+
+            async function handleFileSelect() {
+                const file = fileInput.files[0];
+                if (!file) return;
+
+                originalFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    mainImage.onload = async () => {
+                        uploadArea.classList.add('hidden');
+                        blurSection.classList.remove('hidden');
+                        await applyBlur();
+                    };
+                    mainImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            async function applyBlur() {
+                if (!mainImage.src || !segmenter) return;
+
+                downloadBtn.disabled = true;
+                downloadBtn.textContent = 'Processing...';
+
+                const segmentation = await segmenter.segmentPeople(mainImage);
+                
+                const foregroundThreshold = 0.5;
+                const backgroundBlur = parseInt(blurSlider.value);
+                const edgeBlur = 3;
+
+                await bodySegmentation.drawBokehEffect(
+                    canvas, mainImage, segmentation, foregroundThreshold, backgroundBlur, edgeBlur
+                );
+
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = 'Download Image';
+            }
+
+            function downloadImage() {
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                const name = originalFile.name.split('.').slice(0, -1).join('.');
+                a.download = `${name}-bg-blurred.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            function resetAll() {
+                originalFile = null;
+                mainImage.src = '';
+                fileInput.value = '';
+                blurSection.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
